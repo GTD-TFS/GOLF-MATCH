@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="GOLF-MATCH" />
+  <title>Golf Match</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Golf Match</h1>
+    <nav>
+      <button data-view="matches" aria-label="Partidos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="4" y="5" width="16" height="15" rx="3"></rect>
+          <path d="M8 3v4"></path>
+          <path d="M16 3v4"></path>
+          <path d="M4 10h16"></path>
+          <path d="M8 14h3"></path>
+          <path d="M13 14h3"></path>
+        </svg>
+      </button>
+
+      <button data-view="fields" aria-label="Campos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 19h16"></path>
+          <path d="M8 19V4"></path>
+          <path d="M8 5h8l-2.5 3 2.5 3H8"></path>
+        </svg>
+      </button>
+
+      <button data-view="availability" aria-label="Disponibilidad">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 7v5l3 2"></path>
+        </svg>
+      </button>
+
+      <button data-view="profile" aria-label="Perfil">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6"></path>
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="matches" class="view active">
+      <h2>Partidos</h2>
+      <div id="matchList" class="card-list"></div>
+    </section>
+
+    <section id="fields" class="view">
+      <h2>Campos de Tenerife</h2>
+      <div id="fieldList" class="card-list field-list"></div>
+    </section>
+
+    <section id="availability" class="view">
+      <div class="section-head">
+        <button id="openCreateStatus">Publicar estado</button>
+      </div>
+      <div id="statusList" class="card-list"></div>
+    </section>
+
+    <section id="profile" class="view">
+      <h2>Perfil</h2>
+      <form id="profileForm" class="form-card">
+        <div class="profile-avatar-wrap">
+          <label for="profilePhotoInput" class="profile-avatar-picker" aria-label="Cambiar foto de perfil">
+            <img id="profileAvatarPreview" src="https://i.pravatar.cc/300?img=12" alt="Foto de perfil" />
+            <span class="profile-avatar-overlay">Cambiar</span>
+          </label>
+          <input id="profilePhotoInput" type="file" accept="image/*" hidden />
+          <p class="profile-avatar-help">Toca el círculo para añadir o cambiar foto</p>
+        </div>
+        <input id="profileName" type="text" placeholder="Nombre" />
+        <input id="profileZone" type="text" placeholder="Zona" />
+        <input id="profileHandicap" type="number" step="0.1" inputmode="decimal" placeholder="Handicap" />
+        <input id="profileFavCourse" type="text" placeholder="Campo favorito" />
+        <button type="submit">Guardar perfil</button>
+      </form>
+    </section>
+  </main>
+
+  <aside class="ad-dock" aria-label="Publicidad fija">
+    <div class="ad-slot">
+      <span class="ad-badge">Patrocinado</span>
+      <strong>Espacio publicitario</strong>
+      <span>Tiendas, campos y paquetes de golf</span>
+    </div>
+  </aside>
+
+  <button id="openCreateMatch" class="floating-create-match">Crear partido</button>
+
+  <div id="matchModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Crear partido</h3>
+      <form id="createMatchForm">
+        <select id="matchCourse" required>
+          <option value="" selected disabled>Selecciona un campo de Tenerife</option>
+        </select>
+        <input id="matchDate" type="date" required />
+        <input id="matchTime" type="time" required />
+        <input id="matchLevel" type="text" placeholder="HCP orientativo" />
+        <textarea id="matchComment" placeholder="Comentario opcional"></textarea>
+        <button type="submit">Crear</button>
+        <button type="button" class="closeModal">Cerrar</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="statusModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Publicar disponibilidad</h3>
+      <form id="createStatusForm">
+        <textarea id="statusText" placeholder="Ej: Estoy libre esta semana por las mañanas en el sur" required></textarea>
+        <button type="submit">Publicar</button>
+        <button type="button" class="closeModal">Cerrar</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="fieldInfoModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="fieldInfoTitle">Campo</h3>
+      <div id="fieldInfoBody"></div>
+      <div class="actions">
+        <button id="openSlotsFromInfo" type="button">Consultar horarios vacantes</button>
+        <button type="button" class="closeModal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="fieldSlotsModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="fieldSlotsTitle">Horarios vacantes</h3>
+      <div id="fieldSlotsBody"></div>
+      <div class="actions">
+        <button type="button" class="closeModal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="playerModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="playerModalName">Jugador</h3>
+      <div class="player-modal-summary">
+        <img id="playerModalPhoto" src="" alt="Foto del jugador" />
+        <div class="player-modal-grid">
+          <div class="player-meta-card">
+            <span>Zona</span>
+            <strong id="playerModalZone">-</strong>
+          </div>
+          <div class="player-meta-card">
+            <span>HCP</span>
+            <strong id="playerModalHcp">-</strong>
+          </div>
+          <div class="player-meta-card">
+            <span>Campo favorito</span>
+            <strong id="playerModalCourse">-</strong>
+          </div>
+        </div>
+      </div>
+      <p id="playerModalBio"></p>
+      <div class="actions">
+        <button type="button" class="closeModal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
