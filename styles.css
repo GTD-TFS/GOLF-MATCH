@@ -41,7 +41,7 @@ body {
     radial-gradient(circle at top left, rgba(79, 70, 229, 0.1), transparent 30%),
     radial-gradient(circle at top right, rgba(6, 182, 212, 0.1), transparent 26%),
     radial-gradient(circle at bottom center, rgba(34, 197, 94, 0.07), transparent 30%),
-    url("./assets/images/bg-3935.jpg") center top / cover no-repeat,
+    url("./assets/images/bg-3935.jpg") center top / cover no-repeat fixed,
     linear-gradient(180deg, #fbfcff 0%, #f4f7ff 48%, #eef3ff 100%);
   position: relative;
   overflow-x: hidden;
@@ -259,6 +259,17 @@ form button:hover {
   display: block;
 }
 
+#matches > h2,
+#fields > h2,
+#profile > h2 {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: 30px;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--title);
+}
+
 .card-list {
   display: grid;
   gap: 18px;
@@ -396,6 +407,19 @@ textarea {
   resize: vertical;
 }
 
+#matchModal input,
+#matchModal select,
+#matchModal textarea {
+  background: rgba(255, 255, 255, 0.44);
+  border-color: rgba(148, 163, 184, 0.26);
+}
+
+#matchModal input:focus,
+#matchModal select:focus,
+#matchModal textarea:focus {
+  background: rgba(255, 255, 255, 0.64);
+}
+
 form {
   position: relative;
   z-index: 1;
@@ -472,10 +496,36 @@ form {
   max-height: calc(100dvh - var(--header-top-gap) - var(--header-height) - var(--dock-bottom-gap) - var(--dock-height) - 24px - env(safe-area-inset-bottom, 0px));
   overflow: auto;
   box-shadow: var(--shadow-lg);
+  padding-top: 54px;
 }
 
 #fieldScorecardModal .modal-content {
   width: min(100%, 920px);
+}
+
+.modal-close-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(239, 68, 68, 0.48);
+  color: #dc2626;
+  background: rgba(254, 226, 226, 0.92);
+  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.18);
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.modal-close-x:hover {
+  color: #ffffff;
+  border-color: rgba(185, 28, 28, 0.62);
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 14px 26px rgba(220, 38, 38, 0.28);
 }
 
 .meta {
@@ -507,6 +557,25 @@ form {
   min-width: 112px;
 }
 
+#fieldInfoModal .actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.modal-btn-slots {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  border-color: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 14px 26px rgba(37, 99, 235, 0.26);
+}
+
+.modal-btn-scorecard {
+  color: #ffffff;
+  background: linear-gradient(135deg, #059669, #22c55e);
+  border-color: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 14px 26px rgba(5, 150, 105, 0.26);
+}
+
 .join-btn {
   width: 100%;
   min-height: 44px;
@@ -535,10 +604,11 @@ form {
   position: relative;
   isolation: isolate;
   display: grid;
-  gap: 14px;
+  gap: 10px;
   transform: none;
   background: linear-gradient(180deg, rgba(255,255,255,0.58), rgba(255,255,255,0.36));
   border-color: rgba(255, 255, 255, 0.44);
+  cursor: pointer;
 }
 
 .match-card::before {
@@ -563,6 +633,14 @@ form {
 .match-card:hover {
   border-color: rgba(79, 70, 229, 0.28);
   box-shadow: var(--shadow-md);
+}
+
+.match-card.is-collapsed {
+  padding-bottom: 18px;
+}
+
+.match-card.is-expanded {
+  gap: 14px;
 }
 
 .match-header {
@@ -590,6 +668,15 @@ form {
   background: rgba(219, 234, 254, 0.7);
   border: 1px solid rgba(59, 130, 246, 0.25);
   border-radius: 999px;
+}
+
+.match-details {
+  display: none;
+  gap: 12px;
+}
+
+.match-card.is-expanded .match-details {
+  display: grid;
 }
 
 .match-logo {
@@ -726,12 +813,12 @@ form {
   display: grid;
   gap: 12px;
   cursor: pointer;
-  background: linear-gradient(180deg, rgba(255,255,255,0.90), rgba(255,255,255,0.82));
+  background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.54));
 }
 
 .field-card::before {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.78)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.34)),
     radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0));
 }
 
@@ -758,14 +845,16 @@ form {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 8px;
+  gap: 6px;
+  padding-right: 92px;
 }
 
 .field-head h3 {
   margin: 0;
 }
 
-.field-zone {
+.field-municipality {
+  margin: 0;
   width: fit-content;
   padding: 6px 10px;
   border-radius: 999px;
@@ -776,22 +865,36 @@ form {
   background: rgba(6, 182, 212, 0.12);
 }
 
-.field-meta-grid {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.field-logo {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(229, 241, 255, 0.92));
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow:
+    0 10px 18px rgba(15, 23, 42, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
 }
 
-.field-meta-item {
-  padding: 7px 11px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #334155;
-  border: 1px solid rgba(148, 163, 184, 0.28);
-  background: rgba(255, 255, 255, 0.7);
+.field-logo-img {
+  max-width: 56px;
+  max-height: 56px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(15, 23, 42, 0.2));
+}
+
+.field-logo-fallback {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1d4ed8;
 }
 
 .field-actions {
@@ -896,6 +999,27 @@ form {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 14px;
+}
+
+.course-info-grid-compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.course-hero {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 14px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  box-shadow: 0 16px 28px rgba(15, 23, 42, 0.14);
+}
+
+.course-hero img {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  display: block;
 }
 
 .course-info-item {
@@ -1277,6 +1401,13 @@ form {
     font-size: 26px;
   }
 
+  #matches > h2,
+  #fields > h2,
+  #profile > h2 {
+    font-size: 26px;
+    margin-bottom: 14px;
+  }
+
   .card,
   .form-card,
   .modal-content,
@@ -1317,8 +1448,32 @@ form {
     padding: 7px 9px;
   }
 
+  .field-head {
+    padding-right: 78px;
+  }
+
+  .field-logo {
+    top: 14px;
+    right: 14px;
+    width: 62px;
+    height: 62px;
+  }
+
+  .field-logo-img {
+    max-width: 50px;
+    max-height: 50px;
+  }
+
   .course-info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .course-info-grid-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .course-hero img {
+    height: 172px;
   }
 
   .player-modal-summary {
@@ -1368,5 +1523,9 @@ form {
   .floating-create-match {
     right: 14px;
     bottom: calc(var(--dock-bottom-gap) + var(--dock-height) + 14px + env(safe-area-inset-bottom, 0px));
+  }
+
+  #fieldInfoModal .actions {
+    grid-template-columns: 1fr;
   }
 }

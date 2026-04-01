@@ -30,7 +30,11 @@ window.UI = {
         ))
         .join("");
 
-      card.className = "card match-card";
+      card.className = "card match-card is-collapsed";
+      card.dataset.matchCardId = String(match.id);
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+      card.setAttribute("aria-expanded", "false");
       card.innerHTML = `
         <div class="match-logo" aria-label="Logo del campo">
           ${logoMarkup}
@@ -39,27 +43,29 @@ window.UI = {
           <h3>${matchCourseName}</h3>
           <div class="match-date">${matchDate} · ${match.time}</div>
         </div>
-        <div class="match-meta-grid">
-          <div class="match-meta">
-            <span class="match-meta-label">HCP</span>
-            <strong>${match.level || "Sin especificar"}</strong>
+        <div class="match-details">
+          <div class="match-meta-grid">
+            <div class="match-meta">
+              <span class="match-meta-label">HCP</span>
+              <strong>${match.level || "Sin especificar"}</strong>
+            </div>
+            <div class="match-meta">
+              <span class="match-meta-label">Plazas</span>
+              <strong>${match.players.length}/${match.maxPlayers}</strong>
+            </div>
           </div>
-          <div class="match-meta">
-            <span class="match-meta-label">Plazas</span>
-            <strong>${match.players.length}/${match.maxPlayers}</strong>
+          <div class="players-details">
+            <strong>Jugadores actuales</strong>
+            <ul class="players-list">
+              ${playersMarkup}
+            </ul>
           </div>
-        </div>
-        <div class="players-details">
-          <strong>Jugadores actuales</strong>
-          <ul class="players-list">
-            ${playersMarkup}
-          </ul>
-        </div>
-        <p class="match-comment">${match.comment || "Sin comentarios adicionales."}</p>
-        <div class="actions">
-          <button class="join-btn" data-join-id="${match.id}" ${match.players.length >= match.maxPlayers ? "disabled" : ""}>
-            ${match.players.length >= match.maxPlayers ? "Completo" : "Unirme"}
-          </button>
+          <p class="match-comment">${match.comment || "Sin comentarios adicionales."}</p>
+          <div class="actions">
+            <button class="join-btn" data-join-id="${match.id}" ${match.players.length >= match.maxPlayers ? "disabled" : ""}>
+              ${match.players.length >= match.maxPlayers ? "Completo" : "Unirme"}
+            </button>
+          </div>
         </div>
       `;
       target.appendChild(card);
@@ -77,6 +83,10 @@ window.UI = {
 
     fields.forEach(field => {
       const card = document.createElement("div");
+      const fieldName = field.name || "Campo";
+      const logoMarkup = field.logo
+        ? `<img class="field-logo-img" src="${field.logo}" alt="Logo ${fieldName}" loading="lazy" />`
+        : `<span class="field-logo-fallback">${fieldName.slice(0, 2).toUpperCase()}</span>`;
       card.className = "card field-card";
       card.dataset.fieldId = field.id;
       card.setAttribute("role", "button");
@@ -86,17 +96,15 @@ window.UI = {
       }
       card.innerHTML = `
         <div class="field-bg" aria-hidden="true"></div>
+        <div class="field-logo" aria-label="Logo del campo">
+          ${logoMarkup}
+        </div>
         <div class="field-head">
-          <h3>${field.name}</h3>
-          <span class="field-zone">${field.zone}</span>
+          <h3>${fieldName}</h3>
+          <p class="field-municipality">${field.zone}</p>
         </div>
-        <div class="field-meta-grid">
-          <div class="field-meta-item">${field.holes} hoyos</div>
-          <div class="field-meta-item">Par ${field.par}</div>
-        </div>
-        <p>${field.description}</p>
         <div class="actions field-actions">
-          <button class="field-slots-btn" data-field-slots-id="${field.id}">Consultar horarios vacantes</button>
+          <button class="field-slots-btn" data-field-slots-id="${field.id}">Salidas disponibles</button>
           <button class="field-scorecard-btn" data-field-scorecard-id="${field.id}">Scorecard</button>
         </div>
       `;
@@ -119,18 +127,23 @@ window.UI = {
         ? replies.map(reply => (
           `<li class="status-reply-item"><strong>${reply.author}:</strong> ${reply.text}</li>`
         )).join("")
-        : '<li class="status-reply-empty">Sin respuestas todavia.</li>';
-      const card = document.createElement("div");
-      card.className = "card status-card";
-      card.innerHTML = `
-        <h3>${status.author}</h3>
-        <p>${status.text}</p>
+        : "";
+      const repliesSection = replies.length
+        ? `
         <div class="status-replies">
           <strong>Respuestas</strong>
           <ul class="status-replies-list">
             ${repliesMarkup}
           </ul>
         </div>
+        `
+        : "";
+      const card = document.createElement("div");
+      card.className = "card status-card";
+      card.innerHTML = `
+        <h3>${status.author}</h3>
+        <p>${status.text}</p>
+        ${repliesSection}
         <form class="status-reply-form" data-status-reply-form="${status.id}">
           <input
             type="text"

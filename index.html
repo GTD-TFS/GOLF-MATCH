@@ -60,14 +60,11 @@
     </section>
 
     <section id="fields" class="view">
-      <h2>Campos de Tenerife</h2>
+      <h2>Campos</h2>
       <div id="fieldList" class="card-list field-list"></div>
     </section>
 
     <section id="availability" class="view">
-      <div class="section-head">
-        <button id="openCreateStatus">Publicar estado</button>
-      </div>
       <div id="statusList" class="card-list"></div>
     </section>
 
@@ -103,6 +100,7 @@
 
   <div id="matchModal" class="modal hidden">
     <div class="modal-content">
+      <button type="button" class="modal-close-x closeModal" aria-label="Cerrar">×</button>
       <h3>Crear partido</h3>
       <form id="createMatchForm">
         <select id="matchCourse" required>
@@ -113,56 +111,52 @@
         <input id="matchLevel" type="text" placeholder="HCP orientativo" />
         <textarea id="matchComment" placeholder="Comentario opcional"></textarea>
         <button type="submit">Crear</button>
-        <button type="button" class="closeModal">Cerrar</button>
       </form>
     </div>
   </div>
 
   <div id="statusModal" class="modal hidden">
     <div class="modal-content">
+      <button type="button" class="modal-close-x closeModal" aria-label="Cerrar">×</button>
       <h3>Publicar disponibilidad</h3>
       <form id="createStatusForm">
         <textarea id="statusText" placeholder="Ej: Estoy libre esta semana por las mañanas en el sur" required></textarea>
         <button type="submit">Publicar</button>
-        <button type="button" class="closeModal">Cerrar</button>
       </form>
     </div>
   </div>
 
   <div id="fieldInfoModal" class="modal hidden">
     <div class="modal-content">
+      <button type="button" class="modal-close-x closeModal" aria-label="Cerrar">×</button>
       <h3 id="fieldInfoTitle">Campo</h3>
       <div id="fieldInfoBody"></div>
       <div class="actions">
-        <button id="openScorecardFromInfo" type="button">Scorecard</button>
-        <button id="openSlotsFromInfo" type="button">Consultar horarios vacantes</button>
-        <button type="button" class="closeModal">Cerrar</button>
+        <button id="openSlotsFromInfo" class="modal-btn-slots" type="button">Salidas disponibles</button>
+        <button id="openScorecardFromInfo" class="modal-btn-scorecard" type="button">Scorecard</button>
       </div>
     </div>
   </div>
 
   <div id="fieldSlotsModal" class="modal hidden">
     <div class="modal-content">
+      <button type="button" class="modal-close-x closeModal" aria-label="Cerrar">×</button>
       <h3 id="fieldSlotsTitle">Horarios vacantes</h3>
       <div id="fieldSlotsBody"></div>
-      <div class="actions">
-        <button type="button" class="closeModal">Cerrar</button>
-      </div>
     </div>
   </div>
 
   <div id="fieldScorecardModal" class="modal hidden">
     <div class="modal-content">
+      <button type="button" class="modal-close-x closeModal" aria-label="Cerrar">×</button>
       <h3 id="fieldScorecardTitle">Scorecard</h3>
       <div id="fieldScorecardBody"></div>
-      <div class="actions">
-        <button type="button" class="closeModal">Cerrar</button>
-      </div>
     </div>
   </div>
 
   <div id="playerModal" class="modal hidden">
     <div class="modal-content">
+      <button type="button" class="modal-close-x closeModal" aria-label="Cerrar">×</button>
       <h3 id="playerModalName">Jugador</h3>
       <div class="player-modal-summary">
         <img id="playerModalPhoto" src="" alt="Foto del jugador" />
@@ -182,9 +176,6 @@
         </div>
       </div>
       <p id="playerModalBio"></p>
-      <div class="actions">
-        <button type="button" class="closeModal">Cerrar</button>
-      </div>
     </div>
   </div>
 

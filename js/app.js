@@ -58,12 +58,14 @@ document.addEventListener("DOMContentLoaded", () => {
     UI.renderFields(fields);
     UI.renderStatuses(statuses);
     UI.fillProfile(profile);
+    bindMatchCards();
     bindFieldCards();
     bindFieldSlotsButtons();
     bindFieldScorecardButtons();
     bindJoinButtons();
     bindPlayerChips();
     bindStatusReplyForms();
+    updateFloatingAction();
   }
 
   function switchView(viewId) {
@@ -72,17 +74,49 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-view]").forEach(btn => {
       btn.classList.toggle("is-active", btn.dataset.view === viewId);
     });
-    document.getElementById("openCreateMatch").classList.toggle("is-hidden", viewId !== "matches");
+    updateFloatingAction(viewId);
+  }
+
+  function getActiveViewId() {
+    return document.querySelector(".view.active")?.id || "matches";
+  }
+
+  function updateFloatingAction(viewId = getActiveViewId()) {
+    const fab = document.getElementById("openCreateMatch");
+    if (!fab) return;
+
+    if (document.body.classList.contains("modal-open")) {
+      fab.classList.add("is-hidden");
+      return;
+    }
+
+    if (viewId === "matches") {
+      fab.textContent = "Crear partido";
+      fab.dataset.action = "match";
+      fab.classList.remove("is-hidden");
+      return;
+    }
+
+    if (viewId === "availability") {
+      fab.textContent = "Publicar estado";
+      fab.dataset.action = "status";
+      fab.classList.remove("is-hidden");
+      return;
+    }
+
+    fab.classList.add("is-hidden");
   }
 
   function openModal(id) {
     document.getElementById(id).classList.remove("hidden");
     document.body.classList.add("modal-open");
+    updateFloatingAction();
   }
 
   function closeModals() {
     document.querySelectorAll(".modal").forEach(modal => modal.classList.add("hidden"));
     document.body.classList.remove("modal-open");
+    updateFloatingAction();
   }
 
   function getFieldById(fieldId) {
@@ -132,18 +166,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const field = getFieldById(fieldId);
     if (!field) return;
 
+    const heroMarkup = field.image
+      ? `
+      <div class="course-hero">
+        <img src="${field.image}" alt="${field.name}" loading="lazy" />
+      </div>
+      `
+      : "";
+
     document.getElementById("fieldInfoTitle").textContent = field.name;
     document.getElementById("fieldInfoBody").innerHTML = `
-      <div class="course-info-grid">
-        <div class="course-info-item"><span>Zona</span><strong>${field.zone}</strong></div>
+      ${heroMarkup}
+      <div class="course-info-grid course-info-grid-compact">
+        <div class="course-info-item"><span>Municipio</span><strong>${field.zone}</strong></div>
         <div class="course-info-item"><span>Hoyos</span><strong>${field.holes}</strong></div>
         <div class="course-info-item"><span>Par</span><strong>${field.par}</strong></div>
       </div>
-      <p>${field.description}</p>
-      <div class="course-services">
-        ${field.services.map(service => `<span>${service}</span>`).join("")}
-      </div>
-      <p class="course-contact">Contacto: ${field.phone}</p>
     `;
 
     document.getElementById("openSlotsFromInfo").dataset.fieldSlotsId = field.id;
@@ -298,6 +336,28 @@ document.addEventListener("DOMContentLoaded", () => {
     openModal("fieldScorecardModal");
   }
 
+  function bindMatchCards() {
+    document.querySelectorAll("[data-match-card-id]").forEach(card => {
+      const toggle = () => {
+        const isExpanded = card.classList.toggle("is-expanded");
+        card.classList.toggle("is-collapsed", !isExpanded);
+        card.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+      };
+
+      card.onclick = e => {
+        if (e.target.closest("[data-join-id], [data-player-name], .player-chip, .join-btn")) return;
+        toggle();
+      };
+
+      card.onkeydown = e => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        if (e.target.closest("[data-join-id], [data-player-name], .player-chip, .join-btn")) return;
+        e.preventDefault();
+        toggle();
+      };
+    });
+  }
+
   function bindFieldCards() {
     document.querySelectorAll("[data-field-id]").forEach(card => {
       card.onclick = e => {
@@ -388,8 +448,10 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => switchView(btn.dataset.view));
   });
 
-  document.getElementById("openCreateMatch").addEventListener("click", () => openModal("matchModal"));
-  document.getElementById("openCreateStatus").addEventListener("click", () => openModal("statusModal"));
+  document.getElementById("openCreateMatch").addEventListener("click", () => {
+    const action = document.getElementById("openCreateMatch").dataset.action || "match";
+    openModal(action === "status" ? "statusModal" : "matchModal");
+  });
   document.getElementById("openSlotsFromInfo").addEventListener("click", e => {
     const fieldId = Number(e.currentTarget.dataset.fieldSlotsId);
     if (!fieldId) return;
