@@ -35,32 +35,35 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function syncMatchImages() {
+  function syncMatchBranding() {
     const fieldsById = new Map(fields.map(field => [field.id, field]));
     const fieldsByName = new Map(
       fields.map(field => [field.name.toLowerCase(), field])
     );
 
     matches.forEach(match => {
-      if (match.image) return;
       const field =
         fieldsById.get(match.fieldId) ||
         fieldsByName.get((match.course || "").toLowerCase());
-      if (field) match.image = field.image;
+      if (!field) return;
+      if (!match.fieldId) match.fieldId = field.id;
+      if (field.logo) match.logo = field.logo;
     });
   }
 
   function renderAll() {
     syncProfileDirectory();
-    syncMatchImages();
+    syncMatchBranding();
     UI.renderMatches(matches, "matchList");
     UI.renderFields(fields);
     UI.renderStatuses(statuses);
     UI.fillProfile(profile);
     bindFieldCards();
     bindFieldSlotsButtons();
+    bindFieldScorecardButtons();
     bindJoinButtons();
     bindPlayerChips();
+    bindStatusReplyForms();
   }
 
   function switchView(viewId) {
@@ -74,10 +77,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function openModal(id) {
     document.getElementById(id).classList.remove("hidden");
+    document.body.classList.add("modal-open");
   }
 
   function closeModals() {
     document.querySelectorAll(".modal").forEach(modal => modal.classList.add("hidden"));
+    document.body.classList.remove("modal-open");
   }
 
   function getFieldById(fieldId) {
@@ -133,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="course-info-item"><span>Zona</span><strong>${field.zone}</strong></div>
         <div class="course-info-item"><span>Hoyos</span><strong>${field.holes}</strong></div>
         <div class="course-info-item"><span>Par</span><strong>${field.par}</strong></div>
-        <div class="course-info-item"><span>Diseno</span><strong>${field.designer}</strong></div>
       </div>
       <p>${field.description}</p>
       <div class="course-services">
@@ -143,6 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     document.getElementById("openSlotsFromInfo").dataset.fieldSlotsId = field.id;
+    document.getElementById("openScorecardFromInfo").dataset.fieldScorecardId = field.id;
     openModal("fieldInfoModal");
   }
 
@@ -150,24 +155,161 @@ document.addEventListener("DOMContentLoaded", () => {
     const field = getFieldById(fieldId);
     if (!field) return;
 
-    document.getElementById("fieldSlotsTitle").textContent = `Horarios vacantes · ${field.name}`;
-    document.getElementById("fieldSlotsBody").innerHTML = `
-      <ul class="slots-list">
-        ${field.vacantSlots.map(slot => `<li>${slot}</li>`).join("")}
-      </ul>
-    `;
-    openModal("fieldSlotsModal");
+    const teeoneUrl = field.teeoneUrl || "https://open.teeone.golf/es/amarilla/disponibilidad";
+    const newWindow = window.open(teeoneUrl, "_blank", "noopener,noreferrer");
+    if (!newWindow) window.location.href = teeoneUrl;
+  }
+
+  function openFieldScorecard(fieldId) {
+    const field = getFieldById(fieldId);
+    if (!field) return;
+
+    const scorecard = field.scorecard || {};
+    const type = scorecard.type || "";
+    const holes = Array.isArray(scorecard.holes) ? scorecard.holes : [];
+    const note = scorecard.note || "Datos orientativos del recorrido principal.";
+
+    document.getElementById("fieldScorecardTitle").textContent = `Scorecard · ${field.name}`;
+
+    if (type === "table" && holes.length >= 18) {
+      const front9 = holes.slice(0, 9);
+      const back9 = holes.slice(9, 18);
+      const sumBy = (arr, key) => arr.reduce((acc, row) => acc + (Number(row[key]) || 0), 0);
+      const unit = scorecard.unit || "m";
+      const teeLabels = {
+        w: scorecard.teeLabels?.w || "Blanco",
+        y: scorecard.teeLabels?.y || "Amarillo",
+        b: scorecard.teeLabels?.b || "Azul"
+      };
+
+      const out = {
+        w: sumBy(front9, "w"),
+        y: sumBy(front9, "y"),
+        b: sumBy(front9, "b"),
+        par: sumBy(front9, "par")
+      };
+      const inScore = {
+        w: sumBy(back9, "w"),
+        y: sumBy(back9, "y"),
+        b: sumBy(back9, "b"),
+        par: sumBy(back9, "par")
+      };
+      const total = {
+        w: out.w + inScore.w,
+        y: out.y + inScore.y,
+        b: out.b + inScore.b,
+        par: out.par + inScore.par
+      };
+
+      const renderRows = rows => rows.map(row => `
+        <tr>
+          <td>${row.hole}</td>
+          <td class="tee-w">${row.w}</td>
+          <td class="tee-y">${row.y}</td>
+          <td class="tee-b">${row.b}</td>
+          <td>${row.par}</td>
+          <td>${row.si}</td>
+        </tr>
+      `).join("");
+
+      document.getElementById("fieldScorecardBody").innerHTML = `
+        <div class="scorecard-sheet">
+          <table class="scorecard-table scorecard-table-full" aria-label="Scorecard oficial">
+            <thead>
+              <tr>
+                <th>Hoyo</th>
+                <th class="tee-w">${teeLabels.w} (${unit})</th>
+                <th class="tee-y">${teeLabels.y} (${unit})</th>
+                <th class="tee-b">${teeLabels.b} (${unit})</th>
+                <th>Par</th>
+                <th>S.I</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${renderRows(front9)}
+              <tr class="summary-row">
+                <td>Out</td>
+                <td class="tee-w">${out.w}</td>
+                <td class="tee-y">${out.y}</td>
+                <td class="tee-b">${out.b}</td>
+                <td>${out.par}</td>
+                <td>-</td>
+              </tr>
+              ${renderRows(back9)}
+              <tr class="summary-row">
+                <td>In</td>
+                <td class="tee-w">${inScore.w}</td>
+                <td class="tee-y">${inScore.y}</td>
+                <td class="tee-b">${inScore.b}</td>
+                <td>${inScore.par}</td>
+                <td>-</td>
+              </tr>
+              <tr class="summary-row total-row">
+                <td>Total</td>
+                <td class="tee-w">${total.w}</td>
+                <td class="tee-y">${total.y}</td>
+                <td class="tee-b">${total.b}</td>
+                <td>${total.par}</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="scorecard-note">${note}${scorecard.sourceUrl ? ` · <a href="${scorecard.sourceUrl}" target="_blank" rel="noopener noreferrer">Ver fuente oficial</a>` : ""}</p>
+        </div>
+      `;
+    } else if (type === "images" && Array.isArray(scorecard.images) && scorecard.images.length) {
+      const imagesMarkup = scorecard.images.map((url, index) => (
+        `<img src="${url}" alt="Scorecard oficial ${field.name} ${index + 1}" loading="lazy" />`
+      )).join("");
+      document.getElementById("fieldScorecardBody").innerHTML = `
+        <div class="scorecard-images">
+          ${imagesMarkup}
+        </div>
+        <p class="scorecard-note">${note}${scorecard.sourceUrl ? ` · <a href="${scorecard.sourceUrl}" target="_blank" rel="noopener noreferrer">Abrir PDF oficial</a>` : ""}</p>
+      `;
+    } else if (type === "pdf" && scorecard.pdfUrl) {
+      document.getElementById("fieldScorecardBody").innerHTML = `
+        <div class="scorecard-external">
+          <p>Scorecard oficial disponible en PDF del campo.</p>
+          <a class="scorecard-link-btn" href="${scorecard.pdfUrl}" target="_blank" rel="noopener noreferrer">Abrir PDF oficial</a>
+        </div>
+        <p class="scorecard-note">${note}</p>
+      `;
+    } else if (type === "external" && scorecard.sourceUrl) {
+      document.getElementById("fieldScorecardBody").innerHTML = `
+        <div class="scorecard-external">
+          <p>El scorecard oficial se consulta en la web del campo.</p>
+          <a class="scorecard-link-btn" href="${scorecard.sourceUrl}" target="_blank" rel="noopener noreferrer">Ver fuente oficial</a>
+        </div>
+        <p class="scorecard-note">${note}</p>
+      `;
+    } else {
+      const totalValue = Number(field.par) || 72;
+
+      document.getElementById("fieldScorecardBody").innerHTML = `
+        <div class="scorecard-grid">
+          <div class="scorecard-item"><span>Hoyos</span><strong>${field.holes}</strong></div>
+          <div class="scorecard-item"><span>Par total</span><strong>${totalValue}</strong></div>
+        </div>
+        <p class="scorecard-note">${note}</p>
+      `;
+    }
+
+    openModal("fieldScorecardModal");
   }
 
   function bindFieldCards() {
     document.querySelectorAll("[data-field-id]").forEach(card => {
       card.onclick = e => {
         if (e.target.closest("[data-field-slots-id]")) return;
+        if (e.target.closest("[data-field-scorecard-id]")) return;
         openFieldInfo(Number(card.dataset.fieldId));
       };
 
       card.onkeydown = e => {
         if (e.key !== "Enter" && e.key !== " ") return;
+        if (e.target.closest("[data-field-slots-id]")) return;
+        if (e.target.closest("[data-field-scorecard-id]")) return;
         e.preventDefault();
         openFieldInfo(Number(card.dataset.fieldId));
       };
@@ -179,6 +321,15 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.onclick = e => {
         e.stopPropagation();
         openFieldSlots(Number(btn.dataset.fieldSlotsId));
+      };
+    });
+  }
+
+  function bindFieldScorecardButtons() {
+    document.querySelectorAll("[data-field-scorecard-id]").forEach(btn => {
+      btn.onclick = e => {
+        e.stopPropagation();
+        openFieldScorecard(Number(btn.dataset.fieldScorecardId));
       };
     });
   }
@@ -210,6 +361,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function bindStatusReplyForms() {
+    document.querySelectorAll("[data-status-reply-form]").forEach(form => {
+      form.onsubmit = e => {
+        e.preventDefault();
+        const statusId = Number(form.dataset.statusReplyForm);
+        const input = form.querySelector("[data-status-reply-input]");
+        const text = String(input?.value || "").trim();
+        if (!text) return;
+
+        const status = statuses.find(item => item.id === statusId);
+        if (!status) return;
+
+        if (!Array.isArray(status.replies)) status.replies = [];
+        status.replies.push({
+          id: Date.now(),
+          author: profile.name || "Usuario",
+          text
+        });
+        renderAll();
+      };
+    });
+  }
+
   document.querySelectorAll("[data-view]").forEach(btn => {
     btn.addEventListener("click", () => switchView(btn.dataset.view));
   });
@@ -221,6 +395,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!fieldId) return;
     closeModals();
     openFieldSlots(fieldId);
+  });
+  document.getElementById("openScorecardFromInfo").addEventListener("click", e => {
+    const fieldId = Number(e.currentTarget.dataset.fieldScorecardId);
+    if (!fieldId) return;
+    closeModals();
+    openFieldScorecard(fieldId);
   });
   document.querySelectorAll(".closeModal").forEach(btn => btn.addEventListener("click", closeModals));
   document.getElementById("profilePhotoInput").addEventListener("change", e => {
@@ -252,7 +432,7 @@ document.addEventListener("DOMContentLoaded", () => {
       time: document.getElementById("matchTime").value,
       level: document.getElementById("matchLevel").value,
       comment: document.getElementById("matchComment").value,
-      image: selectedField.image,
+      logo: selectedField.logo,
       players: [profile.name || "Usuario"],
       maxPlayers: 4,
       status: "abierto"
@@ -268,7 +448,8 @@ document.addEventListener("DOMContentLoaded", () => {
     statuses.unshift({
       id: Date.now(),
       author: profile.name || "Usuario",
-      text: document.getElementById("statusText").value
+      text: document.getElementById("statusText").value,
+      replies: []
     });
     e.target.reset();
     closeModals();

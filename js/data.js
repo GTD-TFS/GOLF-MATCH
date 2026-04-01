@@ -9,11 +9,13 @@ window.Store = {
   matches: [
     {
       id: 1,
+      fieldId: 1,
       course: "Amarilla Golf",
       date: "2026-04-03",
       time: "16:00",
       level: "HCP 15-25",
-      comment: "Partida tranquila",
+      comment: "Partidito el viernes",
+      logo: "https://amarillagolf.es/wp-content/uploads/2024/08/logo-amarilla-marina-300x164.png",
       players: ["Javier"],
       maxPlayers: 4,
       status: "abierto"
@@ -23,7 +25,14 @@ window.Store = {
     {
       id: 1,
       author: "Carlos",
-      text: "Estoy libre esta semana por las mañanas por el sur."
+      text: "Estoy libre esta semana por las mananas por el sur.",
+      replies: [
+        {
+          id: 11,
+          author: "Javier",
+          text: "Yo me apunto para un 9 hoyos rapido."
+        }
+      ]
     }
   ],
   players: {
@@ -46,9 +55,38 @@ window.Store = {
       designer: "Donald Steel",
       description: "Recorrido junto al mar con hoyos tecnicos y viento como factor clave.",
       image: "https://www.tenerifegolf.com/sites/default/files/styles/gallery_large/public/aaa2.jpg?itok=1YiGyxYN",
+      logo: "https://amarillagolf.es/wp-content/uploads/2024/08/logo-amarilla-marina-300x164.png",
       services: ["Driving range", "Buggy", "Pro shop", "Restaurante"],
       phone: "+34 922 73 80 32",
-      vacantSlots: ["08:40 · 3 plazas", "10:20 · 2 plazas", "15:10 · 4 plazas"]
+      teeoneUrl: "https://open.teeone.golf/es/amarilla/disponibilidad",
+      vacantSlots: ["08:40 · 3 plazas", "10:20 · 2 plazas", "15:10 · 4 plazas"],
+      scorecard: {
+        type: "table",
+        unit: "m",
+        teeLabels: { w: "Blanca", y: "Amarilla", b: "Roja" },
+        holes: [
+          { hole: 1, w: 461, y: 416, b: 361, par: 5, si: 2 },
+          { hole: 2, w: 297, y: 274, b: 250, par: 4, si: 16 },
+          { hole: 3, w: 159, y: 144, b: 117, par: 3, si: 14 },
+          { hole: 4, w: 348, y: 332, b: 315, par: 4, si: 5 },
+          { hole: 5, w: 127, y: 111, b: 105, par: 3, si: 17 },
+          { hole: 6, w: 458, y: 428, b: 404, par: 5, si: 13 },
+          { hole: 7, w: 325, y: 306, b: 230, par: 4, si: 11 },
+          { hole: 8, w: 101, y: 91, b: 86, par: 3, si: 15 },
+          { hole: 9, w: 318, y: 311, b: 225, par: 4, si: 1 },
+          { hole: 10, w: 444, y: 414, b: 353, par: 5, si: 3 },
+          { hole: 11, w: 338, y: 311, b: 256, par: 4, si: 7 },
+          { hole: 12, w: 356, y: 326, b: 311, par: 4, si: 9 },
+          { hole: 13, w: 354, y: 311, b: 285, par: 4, si: 6 },
+          { hole: 14, w: 379, y: 349, b: 294, par: 4, si: 4 },
+          { hole: 15, w: 121, y: 110, b: 97, par: 3, si: 18 },
+          { hole: 16, w: 326, y: 298, b: 279, par: 4, si: 8 },
+          { hole: 17, w: 144, y: 128, b: 105, par: 3, si: 10 },
+          { hole: 18, w: 424, y: 415, b: 401, par: 5, si: 12 }
+        ],
+        sourceUrl: "https://18birdies.com/golf-courses/club/ca08f8c0-86ac-11e4-8c28-020000005b00/amarilla-golf-country-club",
+        note: "Datos 18Birdies hoyo a hoyo convertidos a metros."
+      }
     },
     {
       id: 2,
@@ -59,9 +97,38 @@ window.Store = {
       designer: "Pepe Gancedo",
       description: "Calles anchas, bunkers volcanicos y tres recorridos combinables.",
       image: "https://www.tenerifegolf.com/sites/default/files/styles/gallery_large/public/g4.jpg?itok=RlZUOcYk",
+      logo: "https://www.golfdelsur.es/favicon.svg",
       services: ["Academia", "Trolleys", "Practice area", "Club house"],
       phone: "+34 922 73 80 17",
-      vacantSlots: ["09:00 · 4 plazas", "12:30 · 1 plaza", "16:00 · 3 plazas"]
+      teeoneUrl: "https://open.teeone.golf/es/golfdelsur/disponibilidad",
+      vacantSlots: ["09:00 · 4 plazas", "12:30 · 1 plaza", "16:00 · 3 plazas"],
+      scorecard: {
+        type: "table",
+        unit: "m",
+        teeLabels: { w: "Blanca", y: "Amarilla", b: "Roja" },
+        holes: [
+          { hole: 1, w: 308, y: 301, b: 279, par: 4, si: 3 },
+          { hole: 2, w: 119, y: 119, b: 117, par: 3, si: 9 },
+          { hole: 3, w: 420, y: 409, b: 381, par: 5, si: 6 },
+          { hole: 4, w: 429, y: 418, b: 381, par: 5, si: 2 },
+          { hole: 5, w: 302, y: 289, b: 269, par: 4, si: 5 },
+          { hole: 6, w: 322, y: 313, b: 283, par: 4, si: 1 },
+          { hole: 7, w: 322, y: 313, b: 271, par: 4, si: 4 },
+          { hole: 8, w: 216, y: 216, b: 193, par: 4, si: 7 },
+          { hole: 9, w: 155, y: 155, b: 131, par: 3, si: 8 },
+          { hole: 10, w: 312, y: 299, b: 280, par: 4, si: 3 },
+          { hole: 11, w: 130, y: 123, b: 110, par: 3, si: 8 },
+          { hole: 12, w: 439, y: 432, b: 380, par: 5, si: 2 },
+          { hole: 13, w: 230, y: 223, b: 208, par: 4, si: 5 },
+          { hole: 14, w: 443, y: 436, b: 354, par: 5, si: 7 },
+          { hole: 15, w: 302, y: 293, b: 279, par: 4, si: 6 },
+          { hole: 16, w: 308, y: 298, b: 285, par: 4, si: 1 },
+          { hole: 17, w: 169, y: 160, b: 116, par: 3, si: 9 },
+          { hole: 18, w: 329, y: 296, b: 283, par: 4, si: 4 }
+        ],
+        sourceUrl: "https://18birdies.com/golf-courses/club/ca3252b0-86ac-11e4-8c28-020000005b00/golf-del-sur",
+        note: "Datos 18Birdies (Links + North) convertidos a metros."
+      }
     },
     {
       id: 3,
@@ -72,9 +139,38 @@ window.Store = {
       designer: "Pepe Gancedo",
       description: "Campo premium con vistas al Atlantico y greenes amplios.",
       image: "https://www.golfcostaadeje.com/wp-content/uploads/2023/02/GolfCostaAdeje3.jpg",
+      logo: "https://www.golfcostaadeje.com/wp-content/uploads/2023/02/cropped-FaviconAdeje-192x192.png",
       services: ["Putting green", "Spa", "Restaurante", "Alquiler de palos"],
       phone: "+34 922 71 00 00",
-      vacantSlots: ["07:50 · 2 plazas", "11:40 · 4 plazas", "14:20 · 2 plazas"]
+      teeoneUrl: "https://open.teeone.golf/es/adeje/disponibilidad",
+      vacantSlots: ["07:50 · 2 plazas", "11:40 · 4 plazas", "14:20 · 2 plazas"],
+      scorecard: {
+        type: "table",
+        unit: "m",
+        teeLabels: { w: "Blanca", y: "Amarilla", b: "Azul" },
+        holes: [
+          { hole: 1, w: 493, y: 477, b: 460, par: 5, si: 5 },
+          { hole: 2, w: 130, y: 113, b: 105, par: 3, si: 17 },
+          { hole: 3, w: 523, y: 521, b: 472, par: 5, si: 13 },
+          { hole: 4, w: 420, y: 406, b: 360, par: 4, si: 7 },
+          { hole: 5, w: 131, y: 124, b: 90, par: 3, si: 15 },
+          { hole: 6, w: 343, y: 324, b: 295, par: 4, si: 9 },
+          { hole: 7, w: 157, y: 147, b: 121, par: 3, si: 3 },
+          { hole: 8, w: 513, y: 482, b: 447, par: 5, si: 11 },
+          { hole: 9, w: 391, y: 372, b: 352, par: 4, si: 1 },
+          { hole: 10, w: 220, y: 198, b: 188, par: 3, si: 4 },
+          { hole: 11, w: 477, y: 461, b: 390, par: 5, si: 12 },
+          { hole: 12, w: 367, y: 317, b: 300, par: 4, si: 8 },
+          { hole: 13, w: 474, y: 467, b: 410, par: 5, si: 14 },
+          { hole: 14, w: 154, y: 141, b: 136, par: 3, si: 10 },
+          { hole: 15, w: 380, y: 364, b: 343, par: 4, si: 6 },
+          { hole: 16, w: 173, y: 154, b: 140, par: 3, si: 18 },
+          { hole: 17, w: 408, y: 401, b: 344, par: 4, si: 2 },
+          { hole: 18, w: 501, y: 470, b: 450, par: 5, si: 16 }
+        ],
+        sourceUrl: "https://18birdies.com/golf-courses/club/ca311a30-86ac-11e4-8c28-020000005b00/golf-costa-adeje",
+        note: "Datos 18Birdies (Costa A + Costa B) convertidos a metros."
+      }
     },
     {
       id: 4,
@@ -85,9 +181,38 @@ window.Store = {
       designer: "Dave Thomas",
       description: "Recorrido exigente con desnivel y vistas panoramicas al Teide.",
       image: "https://www.abamagolf.com/images/bagallery/original/Galery3.jpg",
+      logo: "https://www.abamagolf.com/images/Logo_Color_Verde.png",
       services: ["Caddie master", "Buggy GPS", "Clinics", "Restaurant"],
       phone: "+34 922 12 60 00",
-      vacantSlots: ["08:10 · 2 plazas", "10:50 · 3 plazas", "13:30 · 1 plaza"]
+      teeoneUrl: "https://open.teeone.golf/es/abama/disponibilidad",
+      vacantSlots: ["08:10 · 2 plazas", "10:50 · 3 plazas", "13:30 · 1 plaza"],
+      scorecard: {
+        type: "table",
+        unit: "m",
+        teeLabels: { w: "Serie 1", y: "Serie 2", b: "Serie 3" },
+        holes: [
+          { hole: 1, w: 319, y: 293, b: 276, par: 4, si: 9 },
+          { hole: 2, w: 365, y: 265, b: 262, par: 4, si: 7 },
+          { hole: 3, w: 525, y: 502, b: 477, par: 5, si: 11 },
+          { hole: 4, w: 210, y: 182, b: 173, par: 3, si: 5 },
+          { hole: 5, w: 307, y: 300, b: 291, par: 4, si: 13 },
+          { hole: 6, w: 443, y: 423, b: 395, par: 5, si: 15 },
+          { hole: 7, w: 141, y: 130, b: 120, par: 3, si: 17 },
+          { hole: 8, w: 413, y: 387, b: 351, par: 4, si: 1 },
+          { hole: 9, w: 413, y: 390, b: 356, par: 4, si: 3 },
+          { hole: 10, w: 483, y: 463, b: 444, par: 5, si: 12 },
+          { hole: 11, w: 343, y: 324, b: 305, par: 4, si: 10 },
+          { hole: 12, w: 180, y: 152, b: 135, par: 3, si: 14 },
+          { hole: 13, w: 279, y: 276, b: 258, par: 4, si: 16 },
+          { hole: 14, w: 193, y: 147, b: 127, par: 3, si: 18 },
+          { hole: 15, w: 378, y: 349, b: 316, par: 4, si: 4 },
+          { hole: 16, w: 384, y: 349, b: 327, par: 4, si: 6 },
+          { hole: 17, w: 502, y: 452, b: 426, par: 5, si: 8 },
+          { hole: 18, w: 403, y: 385, b: 369, par: 4, si: 2 }
+        ],
+        sourceUrl: "https://www.abamagolf.com/images/campo/WebScorecard.pdf",
+        note: "Distancias oficiales en metros segun tarjeta oficial del campo."
+      }
     },
     {
       id: 5,
@@ -98,9 +223,38 @@ window.Store = {
       designer: "Severiano Ballesteros",
       description: "Recorrido costero con hoyos iconicos sobre acantilado.",
       image: "https://www.tenerifegolf.com/sites/default/files/styles/gallery_large/public/buenavista_golf_03.jpg?itok=aGqT3cET",
+      logo: "https://buenavistagolf.es/images/favicon.png",
       services: ["Zona de practicas", "Buggy", "Escuela", "Cafeteria"],
       phone: "+34 922 12 90 80",
-      vacantSlots: ["09:30 · 4 plazas", "12:10 · 2 plazas", "15:40 · 3 plazas"]
+      teeoneUrl: "https://open.teeone.golf/es/buenavista/disponibilidad",
+      vacantSlots: ["09:30 · 4 plazas", "12:10 · 2 plazas", "15:40 · 3 plazas"],
+      scorecard: {
+        type: "table",
+        unit: "m",
+        teeLabels: { w: "Blanca", y: "Amarilla", b: "Negra" },
+        holes: [
+          { hole: 1, w: 457, y: 432, b: 419, par: 5, si: 7 },
+          { hole: 2, w: 115, y: 112, b: 103, par: 3, si: 17 },
+          { hole: 3, w: 293, y: 290, b: 275, par: 4, si: 15 },
+          { hole: 4, w: 169, y: 163, b: 140, par: 3, si: 9 },
+          { hole: 5, w: 407, y: 402, b: 381, par: 5, si: 13 },
+          { hole: 6, w: 388, y: 359, b: 330, par: 4, si: 3 },
+          { hole: 7, w: 348, y: 336, b: 317, par: 4, si: 1 },
+          { hole: 8, w: 188, y: 176, b: 164, par: 3, si: 5 },
+          { hole: 9, w: 428, y: 403, b: 379, par: 5, si: 11 },
+          { hole: 10, w: 457, y: 428, b: 422, par: 5, si: 18 },
+          { hole: 11, w: 349, y: 332, b: 306, par: 4, si: 2 },
+          { hole: 12, w: 132, y: 123, b: 113, par: 3, si: 16 },
+          { hole: 13, w: 418, y: 406, b: 379, par: 5, si: 12 },
+          { hole: 14, w: 305, y: 297, b: 251, par: 4, si: 10 },
+          { hole: 15, w: 202, y: 169, b: 144, par: 3, si: 8 },
+          { hole: 16, w: 286, y: 278, b: 261, par: 4, si: 6 },
+          { hole: 17, w: 160, y: 151, b: 105, par: 3, si: 4 },
+          { hole: 18, w: 401, y: 399, b: 366, par: 5, si: 14 }
+        ],
+        sourceUrl: "https://18birdies.com/golf-courses/club/ca307df0-86ac-11e4-8c28-020000005b00/buenavista-golf-s-a",
+        note: "Datos 18Birdies (A + B) convertidos a metros."
+      }
     },
     {
       id: 6,
@@ -111,9 +265,80 @@ window.Store = {
       designer: "Mackenzie Ross",
       description: "Campo historico con arbolado y trazado clasico de montaña.",
       image: "https://www.tenerifegolf.com/sites/default/files/styles/gallery_large/public/penon1.jpg?itok=MaqBcoAp",
+      logo: "https://rcgt.es/wp-content/uploads/2017/06/icon_touch_rcgt_2017.png",
       services: ["Club social", "Zona de approach", "Tienda", "Restaurante"],
       phone: "+34 922 63 65 11",
-      vacantSlots: ["08:20 · 2 plazas", "11:00 · 3 plazas", "16:20 · 4 plazas"]
+      teeoneUrl: "https://open.teeone.golf/es/rcgt/disponibilidad",
+      vacantSlots: ["08:20 · 2 plazas", "11:00 · 3 plazas", "16:20 · 4 plazas"],
+      scorecard: {
+        type: "table",
+        unit: "m",
+        teeLabels: { w: "Blancas", y: "Amarillas", b: "Rojas" },
+        holes: [
+          { hole: 1, w: 371, y: 348, b: 307, par: 4, si: 4 },
+          { hole: 2, w: 206, y: 194, b: 168, par: 3, si: 6 },
+          { hole: 3, w: 300, y: 274, b: 239, par: 4, si: 10 },
+          { hole: 4, w: 355, y: 347, b: 310, par: 4, si: 2 },
+          { hole: 5, w: 440, y: 434, b: 392, par: 5, si: 14 },
+          { hole: 6, w: 251, y: 246, b: 198, par: 4, si: 18 },
+          { hole: 7, w: 126, y: 111, b: 97, par: 3, si: 16 },
+          { hole: 8, w: 316, y: 307, b: 286, par: 4, si: 12 },
+          { hole: 9, w: 369, y: 369, b: 321, par: 4, si: 8 },
+          { hole: 10, w: 429, y: 419, b: 382, par: 5, si: 1 },
+          { hole: 11, w: 168, y: 157, b: 144, par: 3, si: 13 },
+          { hole: 12, w: 352, y: 336, b: 282, par: 4, si: 3 },
+          { hole: 13, w: 325, y: 310, b: 295, par: 4, si: 15 },
+          { hole: 14, w: 190, y: 165, b: 139, par: 3, si: 5 },
+          { hole: 15, w: 543, y: 519, b: 495, par: 5, si: 7 },
+          { hole: 16, w: 174, y: 164, b: 140, par: 3, si: 11 },
+          { hole: 17, w: 337, y: 324, b: 308, par: 4, si: 9 },
+          { hole: 18, w: 488, y: 479, b: 447, par: 5, si: 17 }
+        ],
+        sourceUrl: "https://rcgt.es/el-campo/",
+        note: "Distancias y HCP oficiales en metros (hoyo a hoyo)."
+      }
+    },
+    {
+      id: 7,
+      name: "Golf Las Americas",
+      zone: "Arona",
+      holes: 18,
+      par: 72,
+      designer: "John Jacobs",
+      description: "Campo urbano y muy jugable en Playa de las Americas, ideal para todo nivel.",
+      image: "https://www.golflasamericas.com/wordpress/wp-content/uploads/2021/04/golf-course-tenerife.jpg",
+      logo: "https://www.golflasamericas.com/wordpress/wp-content/uploads/2021/04/logo-americas.png",
+      services: ["Driving range", "Putting green", "Buggy", "Restaurante"],
+      phone: "+34 922 75 30 32",
+      teeoneUrl: "https://open.teeone.golf/es/americas/disponibilidad",
+      vacantSlots: ["08:30 · 3 plazas", "11:10 · 2 plazas", "15:20 · 4 plazas"],
+      scorecard: {
+        type: "table",
+        unit: "m",
+        teeLabels: { w: "Blanca", y: "Amarilla", b: "Azul" },
+        holes: [
+          { hole: 1, w: 449, y: 440, b: 396, par: 5, si: 7 },
+          { hole: 2, w: 381, y: 373, b: 329, par: 4, si: 3 },
+          { hole: 3, w: 390, y: 381, b: 320, par: 4, si: 5 },
+          { hole: 4, w: 255, y: 248, b: 215, par: 4, si: 15 },
+          { hole: 5, w: 194, y: 178, b: 149, par: 3, si: 9 },
+          { hole: 6, w: 431, y: 414, b: 365, par: 4, si: 1 },
+          { hole: 7, w: 456, y: 444, b: 404, par: 5, si: 13 },
+          { hole: 8, w: 168, y: 161, b: 139, par: 3, si: 17 },
+          { hole: 9, w: 355, y: 353, b: 318, par: 4, si: 11 },
+          { hole: 10, w: 434, y: 418, b: 365, par: 4, si: 4 },
+          { hole: 11, w: 166, y: 150, b: 121, par: 3, si: 18 },
+          { hole: 12, w: 320, y: 307, b: 280, par: 4, si: 6 },
+          { hole: 13, w: 140, y: 132, b: 126, par: 3, si: 16 },
+          { hole: 14, w: 258, y: 251, b: 219, par: 4, si: 14 },
+          { hole: 15, w: 410, y: 400, b: 365, par: 4, si: 2 },
+          { hole: 16, w: 449, y: 442, b: 395, par: 5, si: 12 },
+          { hole: 17, w: 314, y: 308, b: 269, par: 4, si: 8 },
+          { hole: 18, w: 469, y: 460, b: 398, par: 5, si: 10 }
+        ],
+        sourceUrl: "https://www.golflasamericas.com/wordpress/wp-content/uploads/2021/05/scorecard.pdf",
+        note: "Distancias y golpes oficiales en metros segun tarjeta oficial del campo."
+      }
     }
   ]
 };

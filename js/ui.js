@@ -18,6 +18,10 @@ window.UI = {
       const card = document.createElement("div");
       const players = match.players.length ? match.players : ["Sin jugadores todavía"];
       const matchDate = this.formatDate(match.date);
+      const matchCourseName = match.course || "Campo";
+      const logoMarkup = match.logo
+        ? `<img class="match-logo-img" src="${match.logo}" alt="Logo ${matchCourseName}" loading="lazy" />`
+        : `<span class="match-logo-fallback">${matchCourseName.slice(0, 2).toUpperCase()}</span>`;
       const playersMarkup = players
         .map(player => (
           player === "Sin jugadores todavía"
@@ -27,13 +31,12 @@ window.UI = {
         .join("");
 
       card.className = "card match-card";
-      if (match.image) {
-        card.style.setProperty("--match-image", `url("${match.image}")`);
-      }
       card.innerHTML = `
-        <div class="match-bg" aria-hidden="true"></div>
+        <div class="match-logo" aria-label="Logo del campo">
+          ${logoMarkup}
+        </div>
         <div class="match-header">
-          <h3>${match.course}</h3>
+          <h3>${matchCourseName}</h3>
           <div class="match-date">${matchDate} · ${match.time}</div>
         </div>
         <div class="match-meta-grid">
@@ -90,11 +93,11 @@ window.UI = {
         <div class="field-meta-grid">
           <div class="field-meta-item">${field.holes} hoyos</div>
           <div class="field-meta-item">Par ${field.par}</div>
-          <div class="field-meta-item">${field.designer}</div>
         </div>
         <p>${field.description}</p>
         <div class="actions field-actions">
           <button class="field-slots-btn" data-field-slots-id="${field.id}">Consultar horarios vacantes</button>
+          <button class="field-scorecard-btn" data-field-scorecard-id="${field.id}">Scorecard</button>
         </div>
       `;
       target.appendChild(card);
@@ -111,11 +114,33 @@ window.UI = {
     }
 
     statuses.forEach(status => {
+      const replies = Array.isArray(status.replies) ? status.replies : [];
+      const repliesMarkup = replies.length
+        ? replies.map(reply => (
+          `<li class="status-reply-item"><strong>${reply.author}:</strong> ${reply.text}</li>`
+        )).join("")
+        : '<li class="status-reply-empty">Sin respuestas todavia.</li>';
       const card = document.createElement("div");
-      card.className = "card";
+      card.className = "card status-card";
       card.innerHTML = `
         <h3>${status.author}</h3>
         <p>${status.text}</p>
+        <div class="status-replies">
+          <strong>Respuestas</strong>
+          <ul class="status-replies-list">
+            ${repliesMarkup}
+          </ul>
+        </div>
+        <form class="status-reply-form" data-status-reply-form="${status.id}">
+          <input
+            type="text"
+            maxlength="140"
+            placeholder="Responder a este estado..."
+            data-status-reply-input="${status.id}"
+            required
+          />
+          <button type="submit">Responder</button>
+        </form>
       `;
       target.appendChild(card);
     });
