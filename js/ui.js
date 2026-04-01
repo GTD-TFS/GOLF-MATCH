@@ -47,7 +47,7 @@ window.UI = {
           <div class="match-meta-grid">
             <div class="match-meta">
               <span class="match-meta-label">HCP</span>
-              <strong>${match.level || "Sin especificar"}</strong>
+              <strong>${match.hcpRange || "Sin datos"}</strong>
             </div>
             <div class="match-meta">
               <span class="match-meta-label">Plazas</span>
@@ -141,7 +141,10 @@ window.UI = {
       const card = document.createElement("div");
       card.className = "card status-card";
       card.innerHTML = `
-        <h3>${status.author}</h3>
+        <div class="status-head">
+          <img class="status-avatar" src="${status.avatar || "https://i.pravatar.cc/120?img=12"}" alt="${status.author}" loading="lazy" />
+          <h3>${status.author}</h3>
+        </div>
         <p>${status.text}</p>
         ${repliesSection}
         <form class="status-reply-form" data-status-reply-form="${status.id}">
@@ -152,7 +155,11 @@ window.UI = {
             data-status-reply-input="${status.id}"
             required
           />
-          <button type="submit">Responder</button>
+          <button type="submit" class="status-reply-send" aria-label="Responder">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+            </svg>
+          </button>
         </form>
       `;
       target.appendChild(card);

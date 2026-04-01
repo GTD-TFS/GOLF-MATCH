@@ -106,9 +106,10 @@
         <select id="matchCourse" required>
           <option value="" selected disabled>Selecciona un campo de Tenerife</option>
         </select>
-        <input id="matchDate" type="date" required />
-        <input id="matchTime" type="time" required />
-        <input id="matchLevel" type="text" placeholder="HCP orientativo" />
+        <div class="match-date-time-row">
+          <input id="matchDate" type="date" required />
+          <input id="matchTime" type="time" required />
+        </div>
         <textarea id="matchComment" placeholder="Comentario opcional"></textarea>
         <button type="submit">Crear</button>
       </form>

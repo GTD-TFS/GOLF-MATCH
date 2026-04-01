@@ -51,9 +51,48 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function parseHandicapValue(value) {
+    const normalized = String(value ?? "").replace(",", ".").trim();
+    const parsed = Number.parseFloat(normalized);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function formatHandicapValue(value) {
+    if (!Number.isFinite(value)) return "-";
+    const rounded = Math.round(value * 10) / 10;
+    return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+  }
+
+  function syncMatchHcpRanges() {
+    matches.forEach(match => {
+      const handicaps = (Array.isArray(match.players) ? match.players : [])
+        .map(name => parseHandicapValue(getPlayerInfo(name)?.handicap))
+        .filter(value => Number.isFinite(value));
+
+      if (!handicaps.length) {
+        match.hcpRange = "Sin datos";
+        return;
+      }
+
+      const min = Math.min(...handicaps);
+      const max = Math.max(...handicaps);
+      match.hcpRange = min === max
+        ? formatHandicapValue(min)
+        : `${formatHandicapValue(min)}-${formatHandicapValue(max)}`;
+    });
+  }
+
+  function syncStatusAvatars() {
+    statuses.forEach(status => {
+      status.avatar = getPlayerInfo(status.author)?.photo || defaultAvatar;
+    });
+  }
+
   function renderAll() {
     syncProfileDirectory();
     syncMatchBranding();
+    syncMatchHcpRanges();
+    syncStatusAvatars();
     UI.renderMatches(matches, "matchList");
     UI.renderFields(fields);
     UI.renderStatuses(statuses);
@@ -93,17 +132,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (viewId === "matches") {
       fab.textContent = "Crear partido";
       fab.dataset.action = "match";
+      fab.classList.remove("is-icon");
       fab.classList.remove("is-hidden");
       return;
     }
 
     if (viewId === "availability") {
-      fab.textContent = "Publicar estado";
+      fab.innerHTML = `
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+        </svg>
+      `;
+      fab.setAttribute("aria-label", "Publicar estado");
       fab.dataset.action = "status";
+      fab.classList.add("is-icon");
       fab.classList.remove("is-hidden");
       return;
     }
 
+    fab.classList.remove("is-icon");
     fab.classList.add("is-hidden");
   }
 
@@ -182,6 +229,11 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="course-info-item"><span>Hoyos</span><strong>${field.holes}</strong></div>
         <div class="course-info-item"><span>Par</span><strong>${field.par}</strong></div>
       </div>
+      <p>${field.description}</p>
+      <div class="course-services">
+        ${field.services.map(service => `<span>${service}</span>`).join("")}
+      </div>
+      <p class="course-contact">Contacto: ${field.phone}</p>
     `;
 
     document.getElementById("openSlotsFromInfo").dataset.fieldSlotsId = field.id;
@@ -492,7 +544,6 @@ document.addEventListener("DOMContentLoaded", () => {
       course: selectedField.name,
       date: document.getElementById("matchDate").value,
       time: document.getElementById("matchTime").value,
-      level: document.getElementById("matchLevel").value,
       comment: document.getElementById("matchComment").value,
       logo: selectedField.logo,
       players: [profile.name || "Usuario"],
