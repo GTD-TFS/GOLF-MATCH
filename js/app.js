@@ -735,6 +735,8 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.onclick = e => {
         e.stopPropagation();
         const matchId = Number(btn.dataset.matchDeleteId);
+        const shouldDelete = window.confirm("¿Seguro que quieres borrar este partido? Esta acción elimina la tarjeta y su conversación.");
+        if (!shouldDelete) return;
         removeMatchCompletely(matchId);
         renderAll();
       };
@@ -752,13 +754,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if (playerIndex < 0) return;
 
         if (match.players.length <= 1) {
+          const confirmLastPlayerLeave = window.confirm("Eres el único jugador. Si sales, el partido se borrará. ¿Continuar?");
+          if (!confirmLastPlayerLeave) return;
           removeMatchCompletely(matchId);
           renderAll();
           return;
         }
 
+        const isCreator = String(match.createdBy || "").trim() === playerName;
+        const leaveMessage = isCreator
+          ? "Vas a abandonar este partido como creador. El partido seguirá activo con otro creador. ¿Continuar?"
+          : "¿Seguro que quieres salir de este partido?";
+        const shouldLeave = window.confirm(leaveMessage);
+        if (!shouldLeave) return;
+
         match.players.splice(playerIndex, 1);
-        if (String(match.createdBy || "").trim() === playerName) {
+        if (isCreator) {
           match.createdBy = match.players[0] || "";
         }
         if (match.players.length < match.maxPlayers) match.status = "abierto";

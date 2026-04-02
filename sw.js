@@ -1,4 +1,4 @@
-const CACHE_NAME = "golf-match-v21";
+const CACHE_NAME = "golf-match-v22";
 const CORE_ASSETS = [
   "./",
   "index.html",
