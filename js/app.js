@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const { profile, matches, statuses, fields, players } = window.Store;
   const defaultAvatar = "https://i.pravatar.cc/300?img=12";
+  const appBootTs = Date.now();
 
   if (!profile.photo) profile.photo = defaultAvatar;
 
@@ -88,22 +89,138 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function getCurrentPlayerName() {
+    return profile.name || "Usuario";
+  }
+
+  function ensureMatchOwnershipAndTimestamps() {
+    matches.forEach(match => {
+      if (!match.createdBy) {
+        match.createdBy = match.players?.[0] || getCurrentPlayerName();
+      }
+
+      const parsedCreatedAt = Number(match.createdAt);
+      if (!Number.isFinite(parsedCreatedAt) || parsedCreatedAt <= 0) {
+        const matchId = Number(match.id);
+        if (Number.isFinite(matchId) && matchId > 1e11) {
+          match.createdAt = matchId;
+        }
+      }
+    });
+
+    statuses.forEach(status => {
+      const parsedCreatedAt = Number(status.createdAt);
+      if (!Number.isFinite(parsedCreatedAt) || parsedCreatedAt <= 0) {
+        const statusId = Number(status.id);
+        if (Number.isFinite(statusId) && statusId > 1e11) {
+          status.createdAt = statusId;
+        }
+      }
+    });
+
+    let nextCreatedAt = appBootTs - (matches.length + statuses.length + 10);
+    const sortedWithoutCreatedAt = [
+      ...matches
+        .filter(match => !Number.isFinite(Number(match.createdAt)) || Number(match.createdAt) <= 0)
+        .map(match => ({ kind: "match", ref: match })),
+      ...statuses
+        .filter(status => !Number.isFinite(Number(status.createdAt)) || Number(status.createdAt) <= 0)
+        .map(status => ({ kind: "status", ref: status }))
+    ];
+
+    sortedWithoutCreatedAt.forEach(item => {
+      nextCreatedAt += 1;
+      item.ref.createdAt = nextCreatedAt;
+    });
+  }
+
+  function getNextStatusId() {
+    const maxId = statuses.reduce((max, status) => {
+      const id = Number(status?.id || 0);
+      return id > max ? id : max;
+    }, 0);
+    return maxId + 1;
+  }
+
+  function ensureMatchThreads() {
+    const statusById = new Map(
+      statuses
+        .map(status => [Number(status?.id || 0), status])
+        .filter(([id]) => id > 0)
+    );
+    const statusByMatchId = new Map();
+    statuses.forEach(status => {
+      const linkedMatchId = Number(status?.linkedMatchId || 0);
+      if (linkedMatchId) statusByMatchId.set(linkedMatchId, status);
+    });
+
+    matches.forEach(match => {
+      const explicitThreadId = Number(match?.statusThreadId || 0);
+      let thread = explicitThreadId ? statusById.get(explicitThreadId) : null;
+      if (!thread) thread = statusByMatchId.get(match.id) || null;
+
+      const commentText = String(match?.comment || "").trim();
+      if (!thread) {
+        thread = {
+          id: getNextStatusId(),
+          author: getCurrentPlayerName(),
+          text: commentText,
+          replies: [],
+          linkedMatchId: match.id,
+          createdAt: Number(match.createdAt) || Date.now()
+        };
+        statuses.push(thread);
+        statusById.set(thread.id, thread);
+        statusByMatchId.set(match.id, thread);
+      }
+
+      match.statusThreadId = thread.id;
+      thread.linkedMatchId = match.id;
+      if (!Array.isArray(thread.replies)) thread.replies = [];
+      if (!thread.author) thread.author = getCurrentPlayerName();
+      if (!thread.createdAt) thread.createdAt = Number(match.createdAt) || Date.now();
+      if (!String(thread.text || "").trim() && commentText) thread.text = commentText;
+    });
+  }
+
+  function getAllKnownPlayerNames() {
+    const names = new Set();
+    if (profile.name) names.add(profile.name);
+    Object.keys(players || {}).forEach(name => names.add(name));
+    matches.forEach(match => (match.players || []).forEach(name => names.add(name)));
+    statuses.forEach(status => {
+      if (status.author) names.add(status.author);
+      (status.replies || []).forEach(reply => {
+        if (reply.author) names.add(reply.author);
+      });
+    });
+    return Array.from(names).filter(Boolean);
+  }
+
+  let activeAddPlayersMatchId = null;
+
   function renderAll() {
     syncProfileDirectory();
     syncMatchBranding();
+    ensureMatchOwnershipAndTimestamps();
     syncMatchHcpRanges();
+    ensureMatchThreads();
     syncStatusAvatars();
-    UI.renderMatches(matches, "matchList");
+    UI.renderMatches(matches, statuses, getCurrentPlayerName(), "matchList");
     UI.renderFields(fields);
-    UI.renderStatuses(statuses);
     UI.fillProfile(profile);
     bindMatchCards();
     bindFieldCards();
     bindFieldSlotsButtons();
     bindFieldScorecardButtons();
-    bindJoinButtons();
+    bindMatchActionButtons();
+    bindMatchManageButtons();
     bindPlayerChips();
     bindStatusReplyForms();
+    bindProposalReplyForms();
+    bindStatusFocusButtons();
+    bindStatusToMatchButtons();
+    bindThreadToggleButtons();
     updateFloatingAction();
   }
 
@@ -121,53 +238,88 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateFloatingAction(viewId = getActiveViewId()) {
-    const fab = document.getElementById("openCreateMatch");
-    if (!fab) return;
+    const matchFab = document.getElementById("openCreateMatch");
+    const statusFab = document.getElementById("openCreateStatus");
+    if (!matchFab || !statusFab) return;
 
     if (document.body.classList.contains("modal-open")) {
-      fab.classList.add("is-hidden");
+      matchFab.classList.add("is-hidden");
+      statusFab.classList.add("is-hidden");
       return;
     }
 
     if (viewId === "matches") {
-      fab.textContent = "Crear partido";
-      fab.dataset.action = "match";
-      fab.classList.remove("is-icon");
-      fab.classList.remove("is-hidden");
+      matchFab.classList.remove("is-hidden");
+      statusFab.classList.remove("is-hidden");
       return;
     }
 
-    if (viewId === "availability") {
-      fab.innerHTML = `
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
-        </svg>
-      `;
-      fab.setAttribute("aria-label", "Publicar estado");
-      fab.dataset.action = "status";
-      fab.classList.add("is-icon");
-      fab.classList.remove("is-hidden");
-      return;
-    }
-
-    fab.classList.remove("is-icon");
-    fab.classList.add("is-hidden");
+    matchFab.classList.add("is-hidden");
+    statusFab.classList.add("is-hidden");
   }
 
   function openModal(id) {
     document.getElementById(id).classList.remove("hidden");
     document.body.classList.add("modal-open");
+    document.body.classList.toggle("match-create-open", id === "matchModal");
     updateFloatingAction();
   }
 
   function closeModals() {
     document.querySelectorAll(".modal").forEach(modal => modal.classList.add("hidden"));
     document.body.classList.remove("modal-open");
+    document.body.classList.remove("match-create-open");
+    const matchForm = document.getElementById("createMatchForm");
+    if (matchForm) matchForm.dataset.linkedStatusId = "";
+    activeAddPlayersMatchId = null;
     updateFloatingAction();
   }
 
   function getFieldById(fieldId) {
     return fields.find(field => field.id === fieldId);
+  }
+
+  function getStatusById(statusId) {
+    return statuses.find(status => status.id === statusId);
+  }
+
+  function openMatchModal(linkedStatusId = null) {
+    const matchForm = document.getElementById("createMatchForm");
+    if (!matchForm) return;
+    matchForm.dataset.linkedStatusId = linkedStatusId ? String(linkedStatusId) : "";
+    openModal("matchModal");
+  }
+
+  function openAddPlayersModal(matchId) {
+    const match = matches.find(item => item.id === matchId);
+    if (!match) return;
+
+    activeAddPlayersMatchId = matchId;
+    const select = document.getElementById("addPlayerSelect");
+    select.innerHTML = '<option value="" selected disabled>Selecciona un perfil</option>';
+
+    const availablePlayers = getAllKnownPlayerNames()
+      .filter(name => !match.players.includes(name))
+      .sort((a, b) => a.localeCompare(b, "es"));
+
+    if (!availablePlayers.length) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "No hay perfiles disponibles";
+      option.disabled = true;
+      option.selected = true;
+      select.appendChild(option);
+      openModal("addPlayersModal");
+      return;
+    }
+
+    availablePlayers.forEach(name => {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      select.appendChild(option);
+    });
+    openModal("addPlayersModal");
   }
 
   function getPlayerInfo(name) {
@@ -413,22 +565,85 @@ document.addEventListener("DOMContentLoaded", () => {
     openModal("fieldScorecardModal");
   }
 
+  function closeAllProposalReplyForms(exceptStatusId = null) {
+    document.querySelectorAll("[data-proposal-thread-id]").forEach(panel => {
+      const panelId = Number(panel.dataset.proposalThreadId);
+      if (exceptStatusId && panelId === exceptStatusId) return;
+      panel.classList.remove("is-open");
+    });
+  }
+
+  function closeAllThreadPanels(exceptThreadId = null) {
+    document.querySelectorAll("[data-thread-panel-id]").forEach(panel => {
+      const panelId = Number(panel.dataset.threadPanelId);
+      if (exceptThreadId && panelId === exceptThreadId) return;
+      panel.classList.remove("is-open");
+    });
+
+    document.querySelectorAll("[data-thread-toggle-id]").forEach(btn => {
+      const buttonId = Number(btn.dataset.threadToggleId);
+      const isExpanded = Boolean(exceptThreadId && buttonId === exceptThreadId);
+      btn.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+    });
+  }
+
+  function collapseAllMatchCards(exceptMatchId = null) {
+    document.querySelectorAll("[data-match-card-id]").forEach(card => {
+      const cardMatchId = Number(card.dataset.matchCardId);
+      if (exceptMatchId && cardMatchId === exceptMatchId) return;
+      card.classList.remove("is-expanded");
+      card.classList.add("is-collapsed");
+      card.setAttribute("aria-expanded", "false");
+    });
+  }
+
   function bindMatchCards() {
     document.querySelectorAll("[data-match-card-id]").forEach(card => {
+      const cardMatchId = Number(card.dataset.matchCardId);
       const toggle = () => {
-        const isExpanded = card.classList.toggle("is-expanded");
-        card.classList.toggle("is-collapsed", !isExpanded);
-        card.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+        const currentlyExpanded = card.classList.contains("is-expanded");
+        if (currentlyExpanded) {
+          card.classList.remove("is-expanded");
+          card.classList.add("is-collapsed");
+          card.setAttribute("aria-expanded", "false");
+          closeAllThreadPanels();
+          return;
+        }
+
+        closeAllProposalReplyForms();
+        collapseAllMatchCards(cardMatchId);
+        closeAllThreadPanels();
+        card.classList.add("is-expanded");
+        card.classList.remove("is-collapsed");
+        card.setAttribute("aria-expanded", "true");
       };
 
       card.onclick = e => {
-        if (e.target.closest("[data-join-id], [data-player-name], .player-chip, .join-btn")) return;
+        if (
+          e.target.closest("[data-match-action-id]") ||
+          e.target.closest("[data-match-delete-id]") ||
+          e.target.closest("[data-match-leave-id]") ||
+          e.target.closest("[data-player-name]") ||
+          e.target.closest(".player-chip") ||
+          e.target.closest(".join-btn") ||
+          e.target.closest("[data-thread-toggle-id]") ||
+          e.target.closest("[data-status-reply-form]")
+        ) return;
         toggle();
       };
 
       card.onkeydown = e => {
         if (e.key !== "Enter" && e.key !== " ") return;
-        if (e.target.closest("[data-join-id], [data-player-name], .player-chip, .join-btn")) return;
+        if (
+          e.target.closest("[data-match-action-id]") ||
+          e.target.closest("[data-match-delete-id]") ||
+          e.target.closest("[data-match-leave-id]") ||
+          e.target.closest("[data-player-name]") ||
+          e.target.closest(".player-chip") ||
+          e.target.closest(".join-btn") ||
+          e.target.closest("[data-thread-toggle-id]") ||
+          e.target.closest("[data-status-reply-form]")
+        ) return;
         e.preventDefault();
         toggle();
       };
@@ -471,20 +686,83 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  function bindJoinButtons() {
-    document.querySelectorAll("[data-join-id]").forEach(btn => {
+  function bindMatchActionButtons() {
+    document.querySelectorAll("[data-match-action-id]").forEach(btn => {
       btn.onclick = e => {
         e.stopPropagation();
-        const matchId = Number(btn.dataset.joinId);
+        const matchId = Number(btn.dataset.matchActionId);
+        const actionType = btn.dataset.matchActionType || "join";
         const match = matches.find(m => m.id === matchId);
-        if (!match || match.players.length >= match.maxPlayers) return;
+        if (!match) return;
 
-        const playerName = profile.name || "Usuario";
+        if (actionType === "add") {
+          if (match.players.length >= match.maxPlayers) return;
+          openAddPlayersModal(matchId);
+          return;
+        }
+
+        if (match.players.length >= match.maxPlayers) return;
+
+        const playerName = getCurrentPlayerName();
         if (!match.players.includes(playerName)) {
           match.players.push(playerName);
           if (match.players.length === match.maxPlayers) match.status = "completo";
           renderAll();
         }
+      };
+    });
+  }
+
+  function bindMatchManageButtons() {
+    const removeMatchCompletely = matchId => {
+      const matchIndex = matches.findIndex(match => match.id === matchId);
+      if (matchIndex < 0) return;
+
+      const match = matches[matchIndex];
+      const linkedStatus = statuses.find(status =>
+        Number(status.linkedMatchId || 0) === matchId ||
+        Number(status.id || 0) === Number(match.statusThreadId || 0)
+      );
+      if (linkedStatus) {
+        const statusIndex = statuses.findIndex(status => status.id === linkedStatus.id);
+        if (statusIndex >= 0) statuses.splice(statusIndex, 1);
+      }
+
+      matches.splice(matchIndex, 1);
+    };
+
+    document.querySelectorAll("[data-match-delete-id]").forEach(btn => {
+      btn.onclick = e => {
+        e.stopPropagation();
+        const matchId = Number(btn.dataset.matchDeleteId);
+        removeMatchCompletely(matchId);
+        renderAll();
+      };
+    });
+
+    document.querySelectorAll("[data-match-leave-id]").forEach(btn => {
+      btn.onclick = e => {
+        e.stopPropagation();
+        const matchId = Number(btn.dataset.matchLeaveId);
+        const match = matches.find(item => item.id === matchId);
+        if (!match) return;
+
+        const playerName = getCurrentPlayerName();
+        const playerIndex = match.players.findIndex(name => name === playerName);
+        if (playerIndex < 0) return;
+
+        if (match.players.length <= 1) {
+          removeMatchCompletely(matchId);
+          renderAll();
+          return;
+        }
+
+        match.players.splice(playerIndex, 1);
+        if (String(match.createdBy || "").trim() === playerName) {
+          match.createdBy = match.players[0] || "";
+        }
+        if (match.players.length < match.maxPlayers) match.status = "abierto";
+        renderAll();
       };
     });
   }
@@ -513,10 +791,78 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!Array.isArray(status.replies)) status.replies = [];
         status.replies.push({
           id: Date.now(),
-          author: profile.name || "Usuario",
+          author: getCurrentPlayerName(),
           text
         });
         renderAll();
+      };
+    });
+  }
+
+  function bindProposalReplyForms() {
+    document.querySelectorAll("[data-proposal-reply-form]").forEach(form => {
+      const statusId = Number(form.dataset.proposalReplyForm);
+      const panel = document.querySelector(`[data-proposal-thread-id="${statusId}"]`);
+
+      form.addEventListener("focusout", () => {
+        window.setTimeout(() => {
+          if (!form.contains(document.activeElement)) {
+            if (panel) panel.classList.remove("is-open");
+          }
+        }, 0);
+      });
+    });
+  }
+
+  function bindStatusFocusButtons() {
+    document.querySelectorAll("[data-status-focus-id]").forEach(btn => {
+      btn.onclick = e => {
+        e.stopPropagation();
+        const statusId = Number(btn.dataset.statusFocusId);
+        closeAllProposalReplyForms(statusId);
+        collapseAllMatchCards();
+        closeAllThreadPanels();
+        const proposalPanel = document.querySelector(`[data-proposal-thread-id="${statusId}"]`);
+        if (proposalPanel) proposalPanel.classList.add("is-open");
+        const input = proposalPanel
+          ? proposalPanel.querySelector(`[data-status-reply-input="${statusId}"]`)
+          : document.querySelector(`[data-status-reply-input="${statusId}"]`);
+        if (input) input.focus();
+      };
+    });
+  }
+
+  function bindStatusToMatchButtons() {
+    document.querySelectorAll("[data-status-to-match-id]").forEach(btn => {
+      btn.onclick = e => {
+        e.stopPropagation();
+        const statusId = Number(btn.dataset.statusToMatchId);
+        if (!getStatusById(statusId)) return;
+        openMatchModal(statusId);
+      };
+    });
+  }
+
+  function bindThreadToggleButtons() {
+    document.querySelectorAll("[data-thread-toggle-id]").forEach(btn => {
+      btn.onclick = e => {
+        e.stopPropagation();
+        const threadId = Number(btn.dataset.threadToggleId);
+        const matchId = Number(btn.dataset.threadMatchId);
+        const card = document.querySelector(`[data-match-card-id="${matchId}"]`);
+        const panel = card?.querySelector(`[data-thread-panel-id="${threadId}"]`);
+        if (!card || !panel) return;
+
+        closeAllProposalReplyForms();
+        collapseAllMatchCards(matchId);
+        const willOpen = !panel.classList.contains("is-open");
+        closeAllThreadPanels(willOpen ? threadId : null);
+        card.classList.add("is-expanded");
+        card.classList.remove("is-collapsed");
+        card.setAttribute("aria-expanded", "true");
+
+        panel.classList.toggle("is-open", willOpen);
+        btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
       };
     });
   }
@@ -526,8 +872,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("openCreateMatch").addEventListener("click", () => {
-    const action = document.getElementById("openCreateMatch").dataset.action || "match";
-    openModal(action === "status" ? "statusModal" : "matchModal");
+    openMatchModal();
+  });
+  document.getElementById("openCreateStatus").addEventListener("click", () => {
+    openModal("statusModal");
   });
   document.getElementById("openSlotsFromInfo").addEventListener("click", e => {
     const fieldId = Number(e.currentTarget.dataset.fieldSlotsId);
@@ -559,22 +907,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("createMatchForm").addEventListener("submit", e => {
     e.preventDefault();
+    const linkedStatusId = Number(e.currentTarget.dataset.linkedStatusId || 0);
     const fieldId = Number(document.getElementById("matchCourse").value);
     const selectedField = getFieldById(fieldId);
     if (!selectedField) return;
+    const commentText = String(document.getElementById("matchComment").value || "").trim();
 
-    matches.unshift({
-      id: Date.now(),
+    const matchId = Date.now();
+    const newMatch = {
+      id: matchId,
       fieldId: selectedField.id,
       course: selectedField.name,
       date: document.getElementById("matchDate").value,
       time: document.getElementById("matchTime").value,
-      comment: document.getElementById("matchComment").value,
+      comment: commentText,
       logo: selectedField.logo,
-      players: [profile.name || "Usuario"],
+      players: [getCurrentPlayerName()],
       maxPlayers: 4,
-      status: "abierto"
-    });
+      status: "abierto",
+      statusThreadId: linkedStatusId || null,
+      createdBy: getCurrentPlayerName(),
+      createdAt: Date.now()
+    };
+
+    if (linkedStatusId) {
+      const linkedStatus = getStatusById(linkedStatusId);
+      if (linkedStatus) linkedStatus.linkedMatchId = matchId;
+    }
+
+    matches.push(newMatch);
     e.target.reset();
     closeModals();
     renderAll();
@@ -583,16 +944,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("createStatusForm").addEventListener("submit", e => {
     e.preventDefault();
-    statuses.unshift({
-      id: Date.now(),
-      author: profile.name || "Usuario",
-      text: document.getElementById("statusText").value,
-      replies: []
+    const createdAt = Date.now();
+    const statusText = String(document.getElementById("statusText").value || "").trim();
+    if (!statusText) return;
+    statuses.push({
+      id: createdAt,
+      author: getCurrentPlayerName(),
+      text: statusText,
+      replies: [],
+      createdAt
     });
     e.target.reset();
     closeModals();
     renderAll();
-    switchView("availability");
+    switchView("matches");
+  });
+
+  document.getElementById("addPlayersForm").addEventListener("submit", e => {
+    e.preventDefault();
+    if (!activeAddPlayersMatchId) return;
+    const match = matches.find(item => item.id === activeAddPlayersMatchId);
+    if (!match) return;
+
+    const selectedPlayer = String(document.getElementById("addPlayerSelect").value || "").trim();
+    if (!selectedPlayer) return;
+    if (match.players.includes(selectedPlayer)) return;
+    if (match.players.length >= match.maxPlayers) return;
+
+    match.players.push(selectedPlayer);
+    if (match.players.length === match.maxPlayers) match.status = "completo";
+    closeModals();
+    renderAll();
+    switchView("matches");
   });
 
   document.getElementById("profileForm").addEventListener("submit", e => {

@@ -43,6 +43,30 @@ window.Store = {
       favCourse: "Amarilla Golf",
       photo: "https://i.pravatar.cc/300?img=12",
       bio: "Jugador habitual de tardes. Le gusta jugar ritmo tranquilo y cerrar los hoyos con putt corto."
+    },
+    Carlos: {
+      name: "Carlos",
+      zone: "Adeje",
+      handicap: "15.2",
+      favCourse: "Golf Costa Adeje",
+      photo: "https://i.pravatar.cc/300?img=32",
+      bio: "Jugador competitivo, suele proponer partidos cortos entre semana."
+    },
+    Ana: {
+      name: "Ana",
+      zone: "Arona",
+      handicap: "22.1",
+      favCourse: "Golf Las Americas",
+      photo: "https://i.pravatar.cc/300?img=47",
+      bio: "Juega 9 hoyos al atardecer y prioriza ritmo de juego fluido."
+    },
+    Luis: {
+      name: "Luis",
+      zone: "Tacoronte",
+      handicap: "9.8",
+      favCourse: "Real Club de Golf de Tenerife",
+      photo: "https://i.pravatar.cc/300?img=53",
+      bio: "Le gustan vueltas técnicas y preparar torneos con antelación."
     }
   },
   fields: [

@@ -38,13 +38,6 @@
         </svg>
       </button>
 
-      <button data-view="availability" aria-label="Disponibilidad">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="9"></circle>
-          <path d="M12 7v5l3 2"></path>
-        </svg>
-      </button>
-
       <button data-view="profile" aria-label="Perfil">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="8" r="4"></circle>
@@ -56,17 +49,13 @@
 
   <main class="container">
     <section id="matches" class="view active">
-      <h2>Partidos</h2>
+      <h2 aria-label="Partidos">&nbsp;</h2>
       <div id="matchList" class="card-list"></div>
     </section>
 
     <section id="fields" class="view">
       <h2>18 Hoyos</h2>
       <div id="fieldList" class="card-list field-list"></div>
-    </section>
-
-    <section id="availability" class="view">
-      <div id="statusList" class="card-list"></div>
     </section>
 
     <section id="profile" class="view">
@@ -97,7 +86,21 @@
     </div>
   </aside>
 
-  <button id="openCreateMatch" class="floating-create-match">Crear partido</button>
+  <button id="openCreateStatus" class="floating-create-status" aria-label="Iniciar conversación">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+    </svg>
+  </button>
+  <button id="openCreateMatch" class="floating-create-match" aria-label="Crear partido">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="17" rx="3"></rect>
+      <path d="M8 2v4"></path>
+      <path d="M16 2v4"></path>
+      <path d="M3 10h18"></path>
+      <path d="M12 13v5"></path>
+      <path d="M9.5 15.5h5"></path>
+    </svg>
+  </button>
 
   <div id="matchModal" class="modal hidden">
     <div class="modal-content">
@@ -120,10 +123,10 @@
   <div id="statusModal" class="modal hidden">
     <div class="modal-content">
       <button type="button" class="modal-close-x closeModal" aria-label="Cerrar">×</button>
-      <h3>Publicar disponibilidad</h3>
+      <h3>Iniciar conversación</h3>
       <form id="createStatusForm">
-        <textarea id="statusText" placeholder="Ej: Estoy libre esta semana por las mañanas en el sur" required></textarea>
-        <button type="submit">Publicar</button>
+        <textarea id="statusText" placeholder="Ej: ¿Alguien para mañana por la tarde?" required></textarea>
+        <button type="submit">Publicar propuesta</button>
       </form>
     </div>
   </div>
@@ -178,6 +181,19 @@
         </div>
       </div>
       <p id="playerModalBio"></p>
+    </div>
+  </div>
+
+  <div id="addPlayersModal" class="modal hidden">
+    <div class="modal-content">
+      <button type="button" class="modal-close-x closeModal" aria-label="Cerrar">×</button>
+      <h3>Añadir jugadores</h3>
+      <form id="addPlayersForm">
+        <select id="addPlayerSelect" required>
+          <option value="" selected disabled>Selecciona un perfil</option>
+        </select>
+        <button type="submit">Añadir</button>
+      </form>
     </div>
   </div>
 
