@@ -825,6 +825,18 @@ form {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
+.field-group-title {
+  grid-column: 1 / -1;
+  margin: 2px 0 4px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #0f172a;
+  opacity: 0.78;
+}
+
 .field-card {
   position: relative;
   isolation: isolate;

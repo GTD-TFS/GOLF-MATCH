@@ -339,6 +339,66 @@ window.Store = {
         sourceUrl: "https://www.golflasamericas.com/wordpress/wp-content/uploads/2021/05/scorecard.pdf",
         note: "Distancias y golpes oficiales en metros segun tarjeta oficial del campo."
       }
+    },
+    {
+      id: 8,
+      category: "P&P",
+      name: "Amarilla Golf P&P",
+      zone: "San Miguel de Abona",
+      holes: 9,
+      par: 27,
+      designer: "Donald Steel",
+      description: "Recorrido Pitch & Putt de 9 hoyos junto a Amarilla Golf, ideal para juego corto y vueltas rapidas.",
+      image: "assets/fields/amarilla-pp.png",
+      logo: "assets/logos/amarilla.png",
+      services: ["Pitch & Putt", "Escuela", "Putting green", "Restaurante"],
+      phone: "+34 922 73 80 32",
+      teeoneUrl: "https://open.teeone.golf/es/amarilla/disponibilidad?rec=223&idVP=43&idVTO=-1",
+      vacantSlots: ["09:20 · 4 plazas", "12:00 · 3 plazas", "17:10 · 4 plazas"],
+      scorecard: {
+        note: "Campo P&P de 9 hoyos (par 27).",
+        sourceUrl: "https://amarillagolf.es/en/pitch-putt/"
+      }
+    },
+    {
+      id: 9,
+      category: "P&P",
+      name: "Los Palos",
+      zone: "Arona",
+      holes: 9,
+      par: 27,
+      designer: "Jose Maria Olazabal",
+      description: "Pitch & Putt de 9 hoyos muy jugable para practicar juego corto en el sur de Tenerife.",
+      image: "assets/fields/los-palos.jpg",
+      logo: "assets/logos/los-palos.png",
+      services: ["Pitch & Putt", "Driving range", "Academia", "Cafeteria"],
+      phone: "+34 922 16 90 80",
+      teeoneUrl: "https://lospalos.golfmanager.com/consumer/ebookings",
+      vacantSlots: ["08:30 · 4 plazas", "11:40 · 4 plazas", "16:20 · 4 plazas"],
+      scorecard: {
+        note: "Recorrido ejecutivo de 9 hoyos (par 27).",
+        sourceUrl: "https://golflospalos.com/en/golf-course-tenerife/"
+      }
+    },
+    {
+      id: 10,
+      category: "P&P",
+      name: "Los Lagos Costa Adeje",
+      zone: "Adeje",
+      holes: 9,
+      par: 33,
+      designer: "Pepe Gancedo",
+      description: "Recorrido de 9 hoyos de Golf Costa Adeje, tecnico pero rapido, con lagos en varios hoyos.",
+      image: "assets/fields/los-lagos.jpg",
+      logo: "assets/logos/costa-adeje.png",
+      services: ["9 hoyos", "Buggy", "Putting green", "Restaurante"],
+      phone: "+34 922 71 00 00",
+      teeoneUrl: "https://open.teeone.golf/es/adeje/disponibilidad?rec=466&idVP=48&idVTO=-1",
+      vacantSlots: ["08:00 · 4 plazas", "10:40 · 3 plazas", "15:30 · 4 plazas"],
+      scorecard: {
+        note: "Los Lagos: 9 hoyos, par 33.",
+        sourceUrl: "https://www.golfcostaadeje.com/los-lagos-golf-course/"
+      }
     }
   ]
 };

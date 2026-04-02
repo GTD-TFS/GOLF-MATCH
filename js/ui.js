@@ -81,7 +81,16 @@ window.UI = {
       return;
     }
 
+    let hasRenderedPpHeading = false;
     fields.forEach(field => {
+      if (!hasRenderedPpHeading && field.category === "P&P") {
+        const heading = document.createElement("div");
+        heading.className = "field-group-title";
+        heading.textContent = "P&P";
+        target.appendChild(heading);
+        hasRenderedPpHeading = true;
+      }
+
       const card = document.createElement("div");
       const fieldName = field.name || "Campo";
       const logoMarkup = field.logo
