@@ -356,8 +356,22 @@ window.Store = {
       teeoneUrl: "https://open.teeone.golf/es/amarilla/disponibilidad?rec=223&idVP=43&idVTO=-1",
       vacantSlots: ["09:20 · 4 plazas", "12:00 · 3 plazas", "17:10 · 4 plazas"],
       scorecard: {
-        note: "Campo P&P de 9 hoyos (par 27).",
-        sourceUrl: "https://amarillagolf.es/en/pitch-putt/"
+        type: "table",
+        unit: "m",
+        teeLabels: { w: "Unica", y: "Unica", b: "Unica" },
+        holes: [
+          { hole: 1, w: 72, y: 72, b: 72, par: 3, si: 8 },
+          { hole: 2, w: 72, y: 72, b: 72, par: 3, si: 7 },
+          { hole: 3, w: 78, y: 78, b: 78, par: 3, si: 5 },
+          { hole: 4, w: 78, y: 78, b: 78, par: 3, si: 6 },
+          { hole: 5, w: 88, y: 88, b: 88, par: 3, si: 1 },
+          { hole: 6, w: 77, y: 77, b: 77, par: 3, si: 4 },
+          { hole: 7, w: 111, y: 111, b: 111, par: 3, si: 2 },
+          { hole: 8, w: 72, y: 72, b: 72, par: 3, si: 9 },
+          { hole: 9, w: 38, y: 38, b: 38, par: 3, si: 3 }
+        ],
+        sourceUrl: "https://18birdies.com/golf-courses/club/ca08f8c0-86ac-11e4-8c28-020000005b00/amarilla-golf-country-club",
+        note: "Datos 18Birdies del recorrido Amarilla (9 hole), convertidos a metros."
       }
     },
     {
@@ -376,8 +390,22 @@ window.Store = {
       teeoneUrl: "https://lospalos.golfmanager.com/consumer/ebookings",
       vacantSlots: ["08:30 · 4 plazas", "11:40 · 4 plazas", "16:20 · 4 plazas"],
       scorecard: {
-        note: "Recorrido ejecutivo de 9 hoyos (par 27).",
-        sourceUrl: "https://golflospalos.com/en/golf-course-tenerife/"
+        type: "table",
+        unit: "m",
+        teeLabels: { w: "Hombres", y: "Mujeres", b: "Mujeres" },
+        holes: [
+          { hole: 1, w: 97, y: 84, b: 84, par: 3, si: 6 },
+          { hole: 2, w: 84, y: 78, b: 78, par: 3, si: 8 },
+          { hole: 3, w: 116, y: 101, b: 101, par: 3, si: 3 },
+          { hole: 4, w: 142, y: 110, b: 110, par: 3, si: 1 },
+          { hole: 5, w: 105, y: 86, b: 86, par: 3, si: 2 },
+          { hole: 6, w: 91, y: 62, b: 62, par: 3, si: 5 },
+          { hole: 7, w: 121, y: 104, b: 104, par: 3, si: 7 },
+          { hole: 8, w: 92, y: 82, b: 82, par: 3, si: 9 },
+          { hole: 9, w: 103, y: 88, b: 88, par: 3, si: 4 }
+        ],
+        sourceUrl: "https://18birdies.com/golf-courses/club/ca34c3b0-86ac-11e4-8c28-020000005b00/centro-de-golf-los-palos",
+        note: "Datos 18Birdies del recorrido Los Palos, convertidos a metros."
       }
     },
     {
@@ -396,8 +424,22 @@ window.Store = {
       teeoneUrl: "https://open.teeone.golf/es/adeje/disponibilidad?rec=466&idVP=48&idVTO=-1",
       vacantSlots: ["08:00 · 4 plazas", "10:40 · 3 plazas", "15:30 · 4 plazas"],
       scorecard: {
-        note: "Los Lagos: 9 hoyos, par 33.",
-        sourceUrl: "https://www.golfcostaadeje.com/los-lagos-golf-course/"
+        type: "table",
+        unit: "m",
+        teeLabels: { w: "Blanca", y: "Amarilla", b: "Amarilla" },
+        holes: [
+          { hole: 1, w: 258, y: 249, b: 249, par: 4, si: 4 },
+          { hole: 2, w: 456, y: 412, b: 412, par: 5, si: 2 },
+          { hole: 3, w: 271, y: 209, b: 209, par: 4, si: 10 },
+          { hole: 4, w: 81, y: 81, b: 81, par: 3, si: 16 },
+          { hole: 5, w: 324, y: 300, b: 300, par: 4, si: 18 },
+          { hole: 6, w: 160, y: 150, b: 150, par: 3, si: 6 },
+          { hole: 7, w: 118, y: 91, b: 91, par: 3, si: 12 },
+          { hole: 8, w: 292, y: 234, b: 234, par: 4, si: 14 },
+          { hole: 9, w: 168, y: 143, b: 143, par: 3, si: 8 }
+        ],
+        sourceUrl: "https://18birdies.com/golf-courses/club/ca311a30-86ac-11e4-8c28-020000005b00/golf-costa-adeje",
+        note: "Datos 18Birdies del recorrido Los Lagos (9), convertidos a metros."
       }
     }
   ]

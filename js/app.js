@@ -261,9 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("fieldScorecardTitle").textContent = `Scorecard · ${field.name}`;
 
-    if (type === "table" && holes.length >= 18) {
-      const front9 = holes.slice(0, 9);
-      const back9 = holes.slice(9, 18);
+    if (type === "table" && holes.length >= 9) {
       const sumBy = (arr, key) => arr.reduce((acc, row) => acc + (Number(row[key]) || 0), 0);
       const unit = scorecard.unit || "m";
       const teeLabels = {
@@ -271,26 +269,6 @@ document.addEventListener("DOMContentLoaded", () => {
         y: scorecard.teeLabels?.y || "Amarillo",
         b: scorecard.teeLabels?.b || "Azul"
       };
-
-      const out = {
-        w: sumBy(front9, "w"),
-        y: sumBy(front9, "y"),
-        b: sumBy(front9, "b"),
-        par: sumBy(front9, "par")
-      };
-      const inScore = {
-        w: sumBy(back9, "w"),
-        y: sumBy(back9, "y"),
-        b: sumBy(back9, "b"),
-        par: sumBy(back9, "par")
-      };
-      const total = {
-        w: out.w + inScore.w,
-        y: out.y + inScore.y,
-        b: out.b + inScore.b,
-        par: out.par + inScore.par
-      };
-
       const renderRows = rows => rows.map(row => `
         <tr>
           <td>${row.hole}</td>
@@ -301,6 +279,78 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${row.si}</td>
         </tr>
       `).join("");
+
+      let bodyRows = "";
+      if (holes.length >= 18) {
+        const front9 = holes.slice(0, 9);
+        const back9 = holes.slice(9, 18);
+        const out = {
+          w: sumBy(front9, "w"),
+          y: sumBy(front9, "y"),
+          b: sumBy(front9, "b"),
+          par: sumBy(front9, "par")
+        };
+        const inScore = {
+          w: sumBy(back9, "w"),
+          y: sumBy(back9, "y"),
+          b: sumBy(back9, "b"),
+          par: sumBy(back9, "par")
+        };
+        const total = {
+          w: out.w + inScore.w,
+          y: out.y + inScore.y,
+          b: out.b + inScore.b,
+          par: out.par + inScore.par
+        };
+
+        bodyRows = `
+          ${renderRows(front9)}
+          <tr class="summary-row">
+            <td>Out</td>
+            <td class="tee-w">${out.w}</td>
+            <td class="tee-y">${out.y}</td>
+            <td class="tee-b">${out.b}</td>
+            <td>${out.par}</td>
+            <td>-</td>
+          </tr>
+          ${renderRows(back9)}
+          <tr class="summary-row">
+            <td>In</td>
+            <td class="tee-w">${inScore.w}</td>
+            <td class="tee-y">${inScore.y}</td>
+            <td class="tee-b">${inScore.b}</td>
+            <td>${inScore.par}</td>
+            <td>-</td>
+          </tr>
+          <tr class="summary-row total-row">
+            <td>Total</td>
+            <td class="tee-w">${total.w}</td>
+            <td class="tee-y">${total.y}</td>
+            <td class="tee-b">${total.b}</td>
+            <td>${total.par}</td>
+            <td>-</td>
+          </tr>
+        `;
+      } else {
+        const total = {
+          w: sumBy(holes, "w"),
+          y: sumBy(holes, "y"),
+          b: sumBy(holes, "b"),
+          par: sumBy(holes, "par")
+        };
+
+        bodyRows = `
+          ${renderRows(holes)}
+          <tr class="summary-row total-row">
+            <td>Total</td>
+            <td class="tee-w">${total.w}</td>
+            <td class="tee-y">${total.y}</td>
+            <td class="tee-b">${total.b}</td>
+            <td>${total.par}</td>
+            <td>-</td>
+          </tr>
+        `;
+      }
 
       document.getElementById("fieldScorecardBody").innerHTML = `
         <div class="scorecard-sheet">
@@ -316,32 +366,7 @@ document.addEventListener("DOMContentLoaded", () => {
               </tr>
             </thead>
             <tbody>
-              ${renderRows(front9)}
-              <tr class="summary-row">
-                <td>Out</td>
-                <td class="tee-w">${out.w}</td>
-                <td class="tee-y">${out.y}</td>
-                <td class="tee-b">${out.b}</td>
-                <td>${out.par}</td>
-                <td>-</td>
-              </tr>
-              ${renderRows(back9)}
-              <tr class="summary-row">
-                <td>In</td>
-                <td class="tee-w">${inScore.w}</td>
-                <td class="tee-y">${inScore.y}</td>
-                <td class="tee-b">${inScore.b}</td>
-                <td>${inScore.par}</td>
-                <td>-</td>
-              </tr>
-              <tr class="summary-row total-row">
-                <td>Total</td>
-                <td class="tee-w">${total.w}</td>
-                <td class="tee-y">${total.y}</td>
-                <td class="tee-b">${total.b}</td>
-                <td>${total.par}</td>
-                <td>-</td>
-              </tr>
+              ${bodyRows}
             </tbody>
           </table>
           <p class="scorecard-note">${note}${scorecard.sourceUrl ? ` · <a href="${scorecard.sourceUrl}" target="_blank" rel="noopener noreferrer">Ver fuente oficial</a>` : ""}</p>

@@ -86,7 +86,7 @@ window.UI = {
       if (!hasRenderedPpHeading && field.category === "P&P") {
         const heading = document.createElement("div");
         heading.className = "field-group-title";
-        heading.textContent = "P&P";
+        heading.textContent = "9 Hoyos";
         target.appendChild(heading);
         hasRenderedPpHeading = true;
       }
