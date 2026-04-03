@@ -20,6 +20,19 @@ window.Store = {
       players: ["Javier"],
       maxPlayers: 4,
       status: "abierto"
+    },
+    {
+      id: 2,
+      fieldId: 3,
+      course: "Golf Costa Adeje",
+      date: "2026-04-04",
+      time: "09:30",
+      level: "HCP 12-22",
+      comment: "Partida cerrada para mañana por la mañana.",
+      logo: "assets/logos/costa-adeje.png",
+      players: ["Javier", "Carlos", "Ana", "Luis"],
+      maxPlayers: 4,
+      status: "completo"
     }
   ],
   statuses: [
@@ -51,7 +64,7 @@ window.Store = {
       zone: "Adeje",
       handicap: "15.2",
       favCourse: "Golf Costa Adeje",
-      photo: "https://i.pravatar.cc/300?img=32",
+      photo: "https://i.pravatar.cc/300?img=15",
       bio: "Jugador competitivo, suele proponer partidos cortos entre semana."
     },
     Ana: {
@@ -69,6 +82,15 @@ window.Store = {
       favCourse: "Real Club de Golf de Tenerife",
       photo: "https://i.pravatar.cc/300?img=53",
       bio: "Le gustan vueltas técnicas y preparar torneos con antelación."
+    },
+    Marta: {
+      name: "Marta",
+      zone: "La Laguna",
+      handicap: "13.6",
+      licenseNumber: "TFE-39126",
+      favCourse: "Abama Golf",
+      photo: "https://i.pravatar.cc/300?img=41",
+      bio: "Le gusta jugar temprano y organizar partidas de 18 hoyos en fin de semana."
     }
   },
   fields: [
