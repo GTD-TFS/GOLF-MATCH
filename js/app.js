@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const { profile, matches, statuses, fields, players } = window.Store;
   const defaultAvatar = "https://i.pravatar.cc/300?img=12";
   const appBootTs = Date.now();
+  let bootSplashClosed = false;
 
   if (!profile.photo) profile.photo = defaultAvatar;
   if (!profile.licenseNumber) profile.licenseNumber = "";
@@ -16,6 +17,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 3000);
       }).catch(() => {});
     });
+  }
+
+  function dismissBootSplash(delayMs = 260) {
+    if (bootSplashClosed) return;
+    const splash = document.getElementById("bootSplash");
+    if (!splash) {
+      bootSplashClosed = true;
+      return;
+    }
+    bootSplashClosed = true;
+    window.setTimeout(() => {
+      splash.classList.add("is-exiting");
+      window.setTimeout(() => {
+        splash.remove();
+      }, 620);
+    }, Math.max(0, delayMs));
   }
 
   function escapeHtml(value) {
@@ -1155,4 +1172,6 @@ document.addEventListener("DOMContentLoaded", () => {
   registerServiceWorker();
   renderAll();
   switchView("matches");
+  dismissBootSplash(220);
+  window.addEventListener("load", () => dismissBootSplash(0), { once: true });
 });

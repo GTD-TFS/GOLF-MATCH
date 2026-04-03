@@ -28,6 +28,16 @@ python3 -m http.server 8080
 
 Luego abre: `http://localhost:8080`
 
+## Deploy y caché móvil
+
+Para evitar que móvil cargue versiones antiguas, usa:
+
+```bash
+npm run deploy
+```
+
+Este comando incrementa automáticamente `CACHE_NAME` en `sw.js` antes de desplegar (`bump:sw-cache`) y fuerza invalidación de cachés antiguas.
+
 ## Estructura
 
 - `index.html`: layout y modales
