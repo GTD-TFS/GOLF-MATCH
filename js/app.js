@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const appBootTs = Date.now();
 
   if (!profile.photo) profile.photo = defaultAvatar;
+  if (!profile.licenseNumber) profile.licenseNumber = "";
 
   function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
@@ -12,12 +13,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
   function syncProfileDirectory() {
     if (!profile.name) return;
     players[profile.name] = {
       name: profile.name,
       zone: profile.zone || "Zona no especificada",
       handicap: profile.handicap || "-",
+      licenseNumber: profile.licenseNumber || "",
       favCourse: profile.favCourse || "Sin campo favorito",
       photo: profile.photo || defaultAvatar,
       bio: players[profile.name]?.bio || "Jugador activo en Golf Match."
@@ -198,6 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let activeAddPlayersMatchId = null;
+  let activeAddPlayerName = "";
 
   function renderAll() {
     syncProfileDirectory();
@@ -272,6 +284,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const matchForm = document.getElementById("createMatchForm");
     if (matchForm) matchForm.dataset.linkedStatusId = "";
     activeAddPlayersMatchId = null;
+    activeAddPlayerName = "";
+    const addPlayersSearchInput = document.getElementById("addPlayersSearchInput");
+    if (addPlayersSearchInput) addPlayersSearchInput.value = "";
+    const addPlayerSelected = document.getElementById("addPlayerSelected");
+    if (addPlayerSelected) addPlayerSelected.value = "";
     updateFloatingAction();
   }
 
@@ -295,30 +312,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!match) return;
 
     activeAddPlayersMatchId = matchId;
-    const select = document.getElementById("addPlayerSelect");
-    select.innerHTML = '<option value="" selected disabled>Selecciona un perfil</option>';
+    activeAddPlayerName = "";
 
     const availablePlayers = getAllKnownPlayerNames()
       .filter(name => !match.players.includes(name))
       .sort((a, b) => a.localeCompare(b, "es"));
+    const selectedInput = document.getElementById("addPlayerSelected");
+    if (selectedInput) selectedInput.value = "";
+    const searchInput = document.getElementById("addPlayersSearchInput");
+    if (searchInput) searchInput.value = "";
 
     if (!availablePlayers.length) {
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = "No hay perfiles disponibles";
-      option.disabled = true;
-      option.selected = true;
-      select.appendChild(option);
+      const list = document.getElementById("addPlayersList");
+      if (list) list.innerHTML = '<li class="players-directory-empty">No hay perfiles disponibles.</li>';
+      const submitBtn = document.querySelector('#addPlayersForm button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
       openModal("addPlayersModal");
       return;
     }
 
-    availablePlayers.forEach(name => {
-      const option = document.createElement("option");
-      option.value = name;
-      option.textContent = name;
-      select.appendChild(option);
-    });
+    renderAddPlayersList();
     openModal("addPlayersModal");
   }
 
@@ -329,6 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
         name: profile.name,
         zone: profile.zone || "Zona no especificada",
         handicap: profile.handicap || "-",
+        licenseNumber: profile.licenseNumber || "",
         favCourse: profile.favCourse || "Sin campo favorito",
         photo: profile.photo || defaultAvatar,
         bio: players[name]?.bio || "Jugador activo en Golf Match."
@@ -342,10 +356,86 @@ document.addEventListener("DOMContentLoaded", () => {
       name,
       zone: "Zona no disponible",
       handicap: "-",
+      licenseNumber: "",
       favCourse: "Sin campo favorito",
       photo: defaultAvatar,
       bio: "Jugador sin ficha completa en este momento."
     };
+  }
+
+  function getDirectoryPlayers(searchTerm = "") {
+    const query = String(searchTerm || "").trim().toLowerCase();
+    return getAllKnownPlayerNames()
+      .filter(name => name && name !== getCurrentPlayerName())
+      .map(name => getPlayerInfo(name))
+      .filter(Boolean)
+      .filter(player => !query || player.name.toLowerCase().includes(query))
+      .sort((a, b) => a.name.localeCompare(b.name, "es"));
+  }
+
+  function renderPlayersDirectory(searchTerm = "") {
+    const list = document.getElementById("playersDirectoryList");
+    if (!list) return;
+    const directoryPlayers = getDirectoryPlayers(searchTerm);
+
+    if (!directoryPlayers.length) {
+      list.innerHTML = '<li class="players-directory-empty">No hay jugadores con ese nombre.</li>';
+      return;
+    }
+
+    list.innerHTML = directoryPlayers.map(player => `
+      <li>
+        <button type="button" class="players-directory-item" data-player-name="${escapeHtml(player.name)}">
+          <img src="${player.photo || defaultAvatar}" alt="Foto de ${escapeHtml(player.name)}" loading="lazy" />
+          <span>${escapeHtml(player.name)}</span>
+        </button>
+      </li>
+    `).join("");
+  }
+
+  function renderAddPlayersList(searchTerm = "") {
+    const list = document.getElementById("addPlayersList");
+    const submitBtn = document.querySelector('#addPlayersForm button[type="submit"]');
+    const selectedInput = document.getElementById("addPlayerSelected");
+    const match = matches.find(item => item.id === activeAddPlayersMatchId);
+    if (!list || !match) return;
+
+    const query = String(searchTerm || "").trim().toLowerCase();
+    const available = getAllKnownPlayerNames()
+      .filter(name => !match.players.includes(name))
+      .map(name => getPlayerInfo(name))
+      .filter(Boolean)
+      .filter(player => !query || player.name.toLowerCase().includes(query))
+      .sort((a, b) => a.name.localeCompare(b.name, "es"));
+
+    if (!available.some(player => player.name === activeAddPlayerName)) {
+      activeAddPlayerName = "";
+      if (selectedInput) selectedInput.value = "";
+    }
+
+    if (!available.length) {
+      list.innerHTML = '<li class="players-directory-empty">No hay jugadores con ese nombre.</li>';
+      if (submitBtn) submitBtn.disabled = true;
+      return;
+    }
+
+    list.innerHTML = available.map(player => {
+      const isSelected = player.name === activeAddPlayerName;
+      return `
+        <li>
+          <button
+            type="button"
+            class="players-directory-item add-players-item${isSelected ? " is-selected" : ""}"
+            data-player-name="${escapeHtml(player.name)}"
+            aria-pressed="${isSelected ? "true" : "false"}"
+          >
+            <img src="${player.photo || defaultAvatar}" alt="Foto de ${escapeHtml(player.name)}" loading="lazy" />
+            <span>${escapeHtml(player.name)}</span>
+          </button>
+        </li>
+      `;
+    }).join("");
+    if (submitBtn) submitBtn.disabled = !activeAddPlayerName;
   }
 
   function openPlayerModal(playerName) {
@@ -356,7 +446,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("playerModalPhoto").src = player.photo || defaultAvatar;
     document.getElementById("playerModalZone").textContent = player.zone || "Zona no especificada";
     document.getElementById("playerModalHcp").textContent = player.handicap || "-";
-    document.getElementById("playerModalCourse").textContent = player.favCourse || "Sin campo favorito";
+    const hasLicense = Boolean(String(player.licenseNumber || "").trim());
+    document.getElementById("playerModalCourseLabel").textContent = hasLicense ? "Licencia" : "Campo favorito";
+    document.getElementById("playerModalCourse").textContent = hasLicense
+      ? player.licenseNumber
+      : player.favCourse || "Sin campo favorito";
     document.getElementById("playerModalBio").textContent = player.bio || "Sin descripcion.";
     openModal("playerModal");
   }
@@ -888,6 +982,39 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("openCreateStatus").addEventListener("click", () => {
     openModal("statusModal");
   });
+  document.getElementById("openProfileEditor").addEventListener("click", () => {
+    openModal("profileEditModal");
+  });
+  document.getElementById("openPlayersDirectory").addEventListener("click", () => {
+    const searchInput = document.getElementById("playersSearchInput");
+    if (searchInput) searchInput.value = "";
+    renderPlayersDirectory();
+    openModal("playersDirectoryModal");
+  });
+  document.getElementById("playersSearchInput").addEventListener("input", e => {
+    renderPlayersDirectory(e.currentTarget.value);
+  });
+  document.getElementById("playersDirectoryList").addEventListener("click", e => {
+    const row = e.target.closest(".players-directory-item");
+    if (!row) return;
+    const playerName = row.dataset.playerName;
+    if (!playerName) return;
+    closeModals();
+    openPlayerModal(playerName);
+  });
+  document.getElementById("addPlayersSearchInput").addEventListener("input", e => {
+    renderAddPlayersList(e.currentTarget.value);
+  });
+  document.getElementById("addPlayersList").addEventListener("click", e => {
+    const row = e.target.closest(".add-players-item");
+    if (!row) return;
+    const playerName = String(row.dataset.playerName || "").trim();
+    if (!playerName) return;
+    activeAddPlayerName = playerName;
+    const selectedInput = document.getElementById("addPlayerSelected");
+    if (selectedInput) selectedInput.value = playerName;
+    renderAddPlayersList(document.getElementById("addPlayersSearchInput")?.value || "");
+  });
   document.getElementById("openSlotsFromInfo").addEventListener("click", e => {
     const fieldId = Number(e.currentTarget.dataset.fieldSlotsId);
     if (!fieldId) return;
@@ -977,7 +1104,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const match = matches.find(item => item.id === activeAddPlayersMatchId);
     if (!match) return;
 
-    const selectedPlayer = String(document.getElementById("addPlayerSelect").value || "").trim();
+    const selectedPlayer = String(activeAddPlayerName || document.getElementById("addPlayerSelected").value || "").trim();
     if (!selectedPlayer) return;
     if (match.players.includes(selectedPlayer)) return;
     if (match.players.length >= match.maxPlayers) return;
@@ -991,12 +1118,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("profileForm").addEventListener("submit", e => {
     e.preventDefault();
-    profile.name = document.getElementById("profileName").value;
+    const previousName = profile.name;
+    const nextName = document.getElementById("profileName").value;
+    profile.name = nextName;
     profile.zone = document.getElementById("profileZone").value;
     profile.handicap = document.getElementById("profileHandicap").value;
-    profile.favCourse = document.getElementById("profileFavCourse").value;
+    profile.licenseNumber = document.getElementById("profileLicense").value;
     if (!profile.photo) profile.photo = defaultAvatar;
+    if (previousName && previousName !== nextName) {
+      matches.forEach(match => {
+        match.players = (match.players || []).map(playerName => (playerName === previousName ? nextName : playerName));
+        if (match.createdBy === previousName) match.createdBy = nextName;
+      });
+      statuses.forEach(status => {
+        if (status.author === previousName) status.author = nextName;
+        status.replies = (status.replies || []).map(reply => ({
+          ...reply,
+          author: reply.author === previousName ? nextName : reply.author
+        }));
+      });
+    }
+    if (previousName && previousName !== nextName && players[previousName]) {
+      delete players[previousName];
+    }
     syncProfileDirectory();
+    closeModals();
     renderAll();
   });
 

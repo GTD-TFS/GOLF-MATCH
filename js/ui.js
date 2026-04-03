@@ -314,16 +314,7 @@ window.UI = {
       return;
     }
 
-    let hasRenderedPpHeading = false;
-    fields.forEach(field => {
-      if (!hasRenderedPpHeading && field.category === "P&P") {
-        const heading = document.createElement("div");
-        heading.className = "field-group-title";
-        heading.textContent = "9 Hoyos";
-        target.appendChild(heading);
-        hasRenderedPpHeading = true;
-      }
-
+    const createFieldCard = field => {
       const card = document.createElement("div");
       const fieldName = field.name || "Campo";
       const logoMarkup = field.logo
@@ -346,16 +337,48 @@ window.UI = {
           <p class="field-municipality">${field.zone}</p>
         </div>
       `;
-      target.appendChild(card);
-    });
+      return card;
+    };
+
+    const isNineHoles = field => field.category === "P&P" || Number(field.holes) === 9;
+    const fields18 = fields.filter(field => !isNineHoles(field));
+    const fields9 = fields.filter(isNineHoles);
+
+    const renderFieldBand = (label, bandClass, list) => {
+      if (!list.length) return;
+      const band = document.createElement("section");
+      band.className = `field-band ${bandClass}`;
+      band.innerHTML = `
+        <div class="field-band-title-wrap">
+          <h3 class="field-band-title"><span>${label}</span></h3>
+        </div>
+        <div class="field-band-grid"></div>
+      `;
+      const grid = band.querySelector(".field-band-grid");
+      list.forEach(field => {
+        grid.appendChild(createFieldCard(field));
+      });
+      target.appendChild(band);
+    };
+
+    renderFieldBand("18 H", "field-band-18", fields18);
+    renderFieldBand("9 H", "field-band-9", fields9);
+
+    if (!fields18.length && !fields9.length) {
+      target.innerHTML = '<div class="card">No hay campos disponibles.</div>';
+    }
   },
 
   fillProfile(profile) {
     document.getElementById("profileName").value = profile.name;
     document.getElementById("profileZone").value = profile.zone;
     document.getElementById("profileHandicap").value = profile.handicap;
-    document.getElementById("profileFavCourse").value = profile.favCourse;
+    document.getElementById("profileLicense").value = profile.licenseNumber || "";
     const avatar = document.getElementById("profileAvatarPreview");
     if (avatar && profile.photo) avatar.src = profile.photo;
+    const profileCardAvatar = document.getElementById("profileCardAvatar");
+    if (profileCardAvatar && profile.photo) profileCardAvatar.src = profile.photo;
+    const profileCardName = document.getElementById("profileCardName");
+    if (profileCardName) profileCardName.textContent = profile.name || "Jugador";
   }
 };

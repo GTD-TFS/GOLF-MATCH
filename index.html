@@ -57,27 +57,38 @@
     </section>
 
     <section id="fields" class="view">
-      <h2>18 Hoyos</h2>
+      <h2 aria-label="Campos">&nbsp;</h2>
       <div id="fieldList" class="card-list field-list"></div>
     </section>
 
     <section id="profile" class="view">
-      <h2>Perfil</h2>
-      <form id="profileForm" class="form-card">
-        <div class="profile-avatar-wrap">
-          <label for="profilePhotoInput" class="profile-avatar-picker" aria-label="Cambiar foto de perfil">
-            <img id="profileAvatarPreview" src="https://i.pravatar.cc/300?img=12" alt="Foto de perfil" />
-            <span class="profile-avatar-overlay">Cambiar</span>
-          </label>
-          <input id="profilePhotoInput" type="file" accept="image/*" hidden />
-          <p class="profile-avatar-help">Toca el círculo para añadir o cambiar foto</p>
-        </div>
-        <input id="profileName" type="text" placeholder="Nombre" />
-        <input id="profileZone" type="text" placeholder="Zona" />
-        <input id="profileHandicap" type="number" step="0.1" inputmode="decimal" placeholder="Handicap" />
-        <input id="profileFavCourse" type="text" placeholder="Campo favorito" />
-        <button type="submit">Guardar perfil</button>
-      </form>
+      <h2 aria-label="Perfil">&nbsp;</h2>
+      <div class="profile-groups">
+        <section class="profile-group profile-group-main">
+          <div class="field-band-title-wrap profile-band-title-wrap">
+            <h3 class="field-band-title profile-band-title"><span>Perfil</span></h3>
+          </div>
+          <button id="openProfileEditor" type="button" class="card profile-option-card">
+            <img id="profileCardAvatar" src="https://i.pravatar.cc/300?img=12" alt="Foto de perfil" />
+            <div class="profile-option-copy">
+              <h3 id="profileCardName">Javier</h3>
+              <p>Editar perfil</p>
+            </div>
+          </button>
+        </section>
+        <section class="profile-group profile-group-community">
+          <div class="field-band-title-wrap profile-band-title-wrap">
+            <h3 class="field-band-title profile-band-title"><span>Comunidad</span></h3>
+          </div>
+          <button id="openPlayersDirectory" type="button" class="card profile-option-card">
+            <span class="players-option-icon" aria-hidden="true">👥</span>
+            <div class="profile-option-copy">
+              <h3>Jugadores</h3>
+              <p>Buscar y ver perfiles</p>
+            </div>
+          </button>
+        </section>
+      </div>
     </section>
   </main>
 
@@ -178,7 +189,7 @@
             <strong id="playerModalHcp">-</strong>
           </div>
           <div class="player-meta-card">
-            <span>Campo favorito</span>
+            <span id="playerModalCourseLabel">Campo favorito</span>
             <strong id="playerModalCourse">-</strong>
           </div>
         </div>
@@ -187,14 +198,45 @@
     </div>
   </div>
 
+  <div id="profileEditModal" class="modal hidden">
+    <div class="modal-content">
+      <button type="button" class="modal-close-x closeModal" aria-label="Cerrar">×</button>
+      <h3>Perfil</h3>
+      <form id="profileForm" class="profile-edit-form">
+        <div class="profile-avatar-wrap">
+          <label for="profilePhotoInput" class="profile-avatar-picker" aria-label="Cambiar foto de perfil">
+            <img id="profileAvatarPreview" src="https://i.pravatar.cc/300?img=12" alt="Foto de perfil" />
+            <span class="profile-avatar-overlay">Cambiar</span>
+          </label>
+          <input id="profilePhotoInput" type="file" accept="image/*" hidden />
+          <p class="profile-avatar-help">Toca el círculo para añadir o cambiar foto</p>
+        </div>
+        <input id="profileName" type="text" placeholder="Nombre" />
+        <input id="profileZone" type="text" placeholder="Zona" />
+        <input id="profileHandicap" type="number" step="0.1" inputmode="decimal" placeholder="Handicap" />
+        <input id="profileLicense" type="text" placeholder="Número de licencia" />
+        <button type="submit" class="modal-btn-scorecard profile-save-btn">Guardar perfil</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="playersDirectoryModal" class="modal hidden">
+    <div class="modal-content">
+      <button type="button" class="modal-close-x closeModal" aria-label="Cerrar">×</button>
+      <h3>Jugadores</h3>
+      <input id="playersSearchInput" type="search" placeholder="Buscar jugador" autocomplete="off" />
+      <ul id="playersDirectoryList" class="players-directory-list"></ul>
+    </div>
+  </div>
+
   <div id="addPlayersModal" class="modal hidden">
     <div class="modal-content">
       <button type="button" class="modal-close-x closeModal" aria-label="Cerrar">×</button>
       <h3>Añadir jugadores</h3>
       <form id="addPlayersForm">
-        <select id="addPlayerSelect" required>
-          <option value="" selected disabled>Selecciona un perfil</option>
-        </select>
+        <input id="addPlayersSearchInput" type="search" placeholder="Buscar jugador" autocomplete="off" />
+        <ul id="addPlayersList" class="players-directory-list add-players-list"></ul>
+        <input id="addPlayerSelected" type="hidden" value="" />
         <button type="submit">Añadir</button>
       </form>
     </div>

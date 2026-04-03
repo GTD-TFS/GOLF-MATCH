@@ -3,6 +3,7 @@ window.Store = {
     name: "Javier",
     zone: "San Miguel de Abona",
     handicap: "18.4",
+    licenseNumber: "TFE-28473",
     favCourse: "Amarilla Golf",
     photo: "https://i.pravatar.cc/300?img=12"
   },
@@ -40,6 +41,7 @@ window.Store = {
       name: "Javier",
       zone: "San Miguel de Abona",
       handicap: "18.4",
+      licenseNumber: "TFE-28473",
       favCourse: "Amarilla Golf",
       photo: "https://i.pravatar.cc/300?img=12",
       bio: "Jugador habitual de tardes. Le gusta jugar ritmo tranquilo y cerrar los hoyos con putt corto."
