@@ -9,7 +9,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").catch(() => {});
+      navigator.serviceWorker.register("./sw.js").then(registration => {
+        registration.update().catch(() => {});
+        setTimeout(() => {
+          registration.update().catch(() => {});
+        }, 3000);
+      }).catch(() => {});
     });
   }
 
