@@ -9,6 +9,14 @@
   --accent: #4f46e5;
   --accent-2: #06b6d4;
   --accent-3: #22c55e;
+  --gold-text: #b89442;
+  --gold-text-strong: #d9b562;
+  --gold-bg: linear-gradient(145deg, rgba(255, 248, 224, 0.94), rgba(241, 204, 106, 0.86));
+  --gold-bg-hover: linear-gradient(145deg, rgba(255, 252, 236, 0.98), rgba(230, 178, 52, 0.92));
+  --gold-border: rgba(212, 163, 68, 0.56);
+  --gold-shadow: 0 12px 24px rgba(143, 101, 25, 0.24);
+  --create-fab-bg: linear-gradient(140deg, rgba(8, 29, 65, 0.72), rgba(16, 58, 120, 0.56));
+  --create-fab-bg-hover: linear-gradient(140deg, rgba(8, 29, 65, 0.82), rgba(17, 65, 136, 0.62));
   --line: rgba(148, 163, 184, 0.22);
   --shadow-sm: 0 10px 30px rgba(15, 23, 42, 0.06);
   --shadow-md: 0 20px 60px rgba(79, 70, 229, 0.12);
@@ -63,12 +71,10 @@ body.match-create-open #openCreateStatus {
   z-index: -1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.18)),
-    radial-gradient(circle at top left, rgba(79, 70, 229, 0.1), transparent 30%),
-    radial-gradient(circle at top right, rgba(6, 182, 212, 0.1), transparent 26%),
-    radial-gradient(circle at bottom center, rgba(34, 197, 94, 0.07), transparent 30%),
-    url("./assets/images/bg-3935.jpg") center top / cover no-repeat,
-    linear-gradient(180deg, #fbfcff 0%, #f4f7ff 48%, #eef3ff 100%);
+    radial-gradient(circle at 14% 18%, rgba(154, 190, 204, 0.18), transparent 34%),
+    radial-gradient(circle at 86% 14%, rgba(126, 171, 188, 0.16), transparent 32%),
+    radial-gradient(circle at 50% 92%, rgba(67, 107, 121, 0.26), transparent 44%),
+    linear-gradient(160deg, #234957 0%, #2a5b6a 44%, #316b79 100%);
   transform: translateZ(0);
 }
 
@@ -88,7 +94,7 @@ body::before {
   width: 260px;
   height: 260px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(79, 70, 229, 0.16) 0%, rgba(79, 70, 229, 0) 72%);
+  background: radial-gradient(circle, rgba(136, 176, 191, 0.2) 0%, rgba(136, 176, 191, 0) 72%);
 }
 
 body::after {
@@ -97,7 +103,7 @@ body::after {
   width: 240px;
   height: 240px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.18) 0%, rgba(6, 182, 212, 0) 70%);
+  background: radial-gradient(circle, rgba(112, 162, 181, 0.2) 0%, rgba(112, 162, 181, 0) 70%);
 }
 
 .container,
@@ -136,10 +142,45 @@ body::after {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 24px;
+  font-size: 25px;
   line-height: 1;
   letter-spacing: -0.03em;
   color: var(--title);
+}
+
+.topbar h1 .brand-title {
+  position: relative;
+  display: inline-block;
+  font-family: "Cinzel", "Cormorant Garamond", "Times New Roman", serif;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  color: transparent;
+  background-image: linear-gradient(180deg, #fff1bb 0%, #f0c34f 36%, #cf9c22 64%, #8a6115 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 8px rgba(108, 75, 12, 0.28);
+}
+
+.topbar h1 .brand-title::after {
+  content: attr(data-title);
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  background-image: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0) 36%,
+    rgba(255, 241, 191, 0.98) 48%,
+    rgba(244, 200, 92, 0.30) 53%,
+    rgba(255, 255, 255, 0) 66%
+  );
+  background-size: 240% 100%;
+  background-position: -170% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  pointer-events: none;
+  animation: compapolGoldShimmer 18s linear infinite;
 }
 
 .topbar h1::before {
@@ -147,9 +188,18 @@ body::after {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: url("./assets/icons/icon-192.png") center / cover no-repeat;
+  background: url("./assets/icons/icon-512.png") center / cover no-repeat;
   border: 1px solid rgba(255, 255, 255, 0.56);
   box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
+}
+
+@keyframes compapolGoldShimmer {
+  from {
+    background-position: 170% 0;
+  }
+  to {
+    background-position: -170% 0;
+  }
 }
 
 .topbar nav {
@@ -209,6 +259,7 @@ button:active {
   justify-content: center;
   position: relative;
   overflow: hidden;
+  color: var(--gold-text);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.46));
   border-color: rgba(255, 255, 255, 0.86);
   box-shadow:
@@ -227,23 +278,27 @@ button:active {
 
 .topbar button:hover {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(79, 70, 229, 0.20), rgba(6, 182, 212, 0.22));
-  color: var(--accent);
+  color: var(--gold-text-strong);
+  border-color: rgba(79, 70, 229, 0.26);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.88),
     0 14px 28px rgba(79, 70, 229, 0.18);
 }
 
 .topbar button.is-active {
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.56);
-  background: linear-gradient(135deg, rgba(79, 70, 229, 0.9), rgba(6, 182, 212, 0.86));
+  color: var(--gold-text-strong);
+  border-color: rgba(191, 219, 254, 0.66);
+  background: linear-gradient(140deg, #040d24 0%, #09224f 56%, #0f3272 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    0 16px 30px rgba(79, 70, 229, 0.34);
+    inset 0 1px 0 rgba(217, 181, 98, 0.22),
+    0 16px 30px rgba(4, 17, 45, 0.62),
+    0 0 28px rgba(15, 50, 114, 0.5);
 }
 
 .topbar button.is-active svg {
-  filter: drop-shadow(0 4px 8px rgba(15, 23, 42, 0.2));
+  filter:
+    drop-shadow(0 2px 6px rgba(217, 181, 98, 0.42))
+    drop-shadow(0 4px 8px rgba(15, 23, 42, 0.26));
 }
 
 .topbar button svg {
@@ -442,9 +497,7 @@ textarea {
 #matchModal .modal-content textarea:focus {
   background: rgba(255, 255, 255, 0.052) !important;
   background-color: rgba(255, 255, 255, 0.052) !important;
-  box-shadow:
-    inset 0 0 0 999px rgba(255, 255, 255, 0.028) !important,
-    0 0 0 4px rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.028), 0 0 0 4px rgba(255, 255, 255, 0.12) !important;
 }
 
 #matchModal .modal-content input:-webkit-autofill,
@@ -666,21 +719,34 @@ form {
 
 #fieldInfoModal .actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, max-content);
+  justify-content: center;
+}
+
+#fieldInfoModal .actions button {
+  width: auto;
+  min-width: 106px;
+  padding-left: 13px;
+  padding-right: 13px;
+  justify-self: center;
 }
 
 .modal-btn-slots {
-  color: #ffffff;
-  background: linear-gradient(135deg, #2563eb, #0ea5e9);
-  border-color: rgba(255, 255, 255, 0.42);
-  box-shadow: 0 14px 26px rgba(37, 99, 235, 0.26);
+  color: var(--gold-text-strong);
+  background: var(--create-fab-bg);
+  border-color: rgba(212, 163, 68, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(217, 181, 98, 0.2),
+    0 14px 26px rgba(4, 17, 45, 0.36);
 }
 
 .modal-btn-scorecard {
-  color: #ffffff;
-  background: linear-gradient(135deg, #059669, #22c55e);
-  border-color: rgba(255, 255, 255, 0.42);
-  box-shadow: 0 14px 26px rgba(5, 150, 105, 0.26);
+  color: var(--gold-text-strong);
+  background: var(--create-fab-bg);
+  border-color: rgba(212, 163, 68, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(217, 181, 98, 0.2),
+    0 14px 26px rgba(6, 22, 52, 0.36);
 }
 
 .join-btn {
@@ -688,15 +754,20 @@ form {
   min-height: 44px;
   font-size: 15px;
   letter-spacing: 0.01em;
-  color: #ffffff;
-  background: linear-gradient(120deg, #2563eb, #0ea5e9 52%, #14b8a6);
-  border-color: rgba(255, 255, 255, 0.42);
-  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.32);
+  color: var(--gold-text-strong);
+  background: linear-gradient(140deg, #040d24 0%, #09224f 56%, #0f3272 100%);
+  border-color: rgba(212, 163, 68, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(217, 181, 98, 0.2),
+    0 14px 30px rgba(4, 17, 45, 0.52);
 }
 
 .join-btn:hover {
-  border-color: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 18px 34px rgba(37, 99, 235, 0.36);
+  color: #e3c67f;
+  border-color: rgba(212, 163, 68, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(227, 198, 127, 0.22),
+    0 18px 34px rgba(4, 17, 45, 0.6);
 }
 
 .join-btn:disabled {
@@ -705,6 +776,25 @@ form {
   border-color: rgba(148, 163, 184, 0.36);
   box-shadow: none;
   cursor: not-allowed;
+}
+
+#createStatusForm button[type="submit"],
+#createMatchForm button[type="submit"] {
+  color: var(--gold-text-strong);
+  background: linear-gradient(140deg, #040d24 0%, #09224f 56%, #0f3272 100%);
+  border-color: rgba(212, 163, 68, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(217, 181, 98, 0.2),
+    0 14px 30px rgba(4, 17, 45, 0.52);
+}
+
+#createStatusForm button[type="submit"]:hover,
+#createMatchForm button[type="submit"]:hover {
+  color: #e3c67f;
+  border-color: rgba(212, 163, 68, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(227, 198, 127, 0.22),
+    0 18px 34px rgba(4, 17, 45, 0.6);
 }
 
 .match-card {
@@ -1064,9 +1154,9 @@ form {
   background-image: var(--field-image);
   background-size: cover;
   background-position: center;
-  filter: blur(1.4px) saturate(1.06);
+  filter: saturate(1.06);
   opacity: 0.48;
-  transform: scale(1.04);
+  transform: scale(1.02);
 }
 
 .field-card:hover {
@@ -1135,23 +1225,47 @@ form {
 .field-actions {
   margin-top: 0;
   display: grid;
+  grid-template-columns: repeat(2, max-content);
+  justify-content: center;
   gap: 10px;
 }
 
+.field-actions button {
+  width: auto;
+  min-width: 106px;
+  padding-left: 13px;
+  padding-right: 13px;
+  justify-self: center;
+}
+
 .field-slots-btn {
-  width: 100%;
-  color: #0f172a;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(191, 219, 254, 0.82));
-  border-color: rgba(59, 130, 246, 0.22);
-  box-shadow: 0 12px 22px rgba(37, 99, 235, 0.14);
+  width: auto;
+  color: var(--gold-text-strong);
+  background: var(--create-fab-bg);
+  border-color: rgba(212, 163, 68, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(217, 181, 98, 0.2),
+    0 12px 22px rgba(4, 17, 45, 0.36);
 }
 
 .field-scorecard-btn {
-  width: 100%;
-  color: #0f172a;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(187, 247, 208, 0.72));
-  border-color: rgba(16, 185, 129, 0.24);
-  box-shadow: 0 12px 22px rgba(5, 150, 105, 0.14);
+  width: auto;
+  color: var(--gold-text-strong);
+  background: var(--create-fab-bg);
+  border-color: rgba(212, 163, 68, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(217, 181, 98, 0.2),
+    0 12px 22px rgba(6, 22, 52, 0.36);
+}
+
+.field-slots-btn:hover,
+.field-scorecard-btn:hover {
+  color: #e3c67f;
+  background: var(--create-fab-bg-hover);
+  border-color: rgba(212, 163, 68, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(227, 198, 127, 0.22),
+    0 16px 26px rgba(4, 17, 45, 0.42);
 }
 
 .status-card {
@@ -1237,16 +1351,17 @@ form {
   width: 42px;
   height: 42px;
   padding: 0;
-  color: #2563eb;
+  color: var(--gold-text);
   background: rgba(219, 234, 254, 0.86);
   border-color: rgba(59, 130, 246, 0.28);
   box-shadow: 0 10px 20px rgba(37, 99, 235, 0.16);
 }
 
 .status-reply-send:hover {
-  color: #ffffff;
+  color: #f3d27a;
   background: linear-gradient(135deg, #2563eb, #0ea5e9);
   border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
 }
 
 .status-actions {
@@ -1269,6 +1384,8 @@ form {
 
 .status-focus-btn {
   position: relative;
+  font-size: 18px;
+  line-height: 1;
   color: #1d4ed8;
   background: rgba(219, 234, 254, 0.86);
   border-color: rgba(59, 130, 246, 0.28);
@@ -1295,10 +1412,38 @@ form {
 }
 
 .status-to-match-btn {
-  color: #065f46;
-  background: rgba(209, 250, 229, 0.9);
-  border-color: rgba(16, 185, 129, 0.28);
-  box-shadow: 0 10px 18px rgba(5, 150, 105, 0.16);
+  color: var(--gold-text);
+  background: linear-gradient(140deg, rgba(8, 29, 65, 0.72), rgba(16, 58, 120, 0.56));
+  border-color: rgba(212, 163, 68, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(217, 181, 98, 0.18),
+    0 10px 18px rgba(8, 29, 65, 0.32);
+}
+
+.status-to-match-btn:hover {
+  color: var(--gold-text-strong);
+  background: linear-gradient(140deg, rgba(8, 29, 65, 0.82), rgba(17, 65, 136, 0.62));
+  border-color: rgba(212, 163, 68, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(227, 198, 127, 0.2),
+    0 12px 24px rgba(8, 29, 65, 0.42);
+}
+
+#profileForm button[type="submit"] {
+  color: var(--gold-text-strong);
+  background: linear-gradient(140deg, #040d24 0%, #09224f 56%, #0f3272 100%);
+  border-color: rgba(212, 163, 68, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(217, 181, 98, 0.2),
+    0 14px 30px rgba(4, 17, 45, 0.52);
+}
+
+#profileForm button[type="submit"]:hover {
+  color: #e3c67f;
+  border-color: rgba(212, 163, 68, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(227, 198, 127, 0.22),
+    0 18px 34px rgba(4, 17, 45, 0.6);
 }
 
 .thread-toggle-btn {
@@ -1684,10 +1829,10 @@ form {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: #065f46;
-  background: rgba(209, 250, 229, 0.92);
-  border-color: rgba(16, 185, 129, 0.34);
-  box-shadow: 0 22px 38px rgba(5, 150, 105, 0.2);
+  color: var(--gold-text);
+  background: var(--create-fab-bg);
+  border-color: rgba(212, 163, 68, 0.58);
+  box-shadow: 0 22px 38px rgba(8, 29, 65, 0.34);
   transition:
     transform 0.2s ease,
     opacity 0.2s ease,
@@ -1696,7 +1841,10 @@ form {
 }
 
 .floating-create-match:hover {
-  box-shadow: 0 26px 44px rgba(5, 150, 105, 0.28);
+  color: var(--gold-text-strong);
+  background: var(--create-fab-bg-hover);
+  border-color: rgba(212, 163, 68, 0.72);
+  box-shadow: 0 26px 44px rgba(8, 29, 65, 0.42);
 }
 
 .floating-create-match.is-hidden {
@@ -1716,10 +1864,10 @@ form {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: #1d4ed8;
-  background: rgba(219, 234, 254, 0.92);
-  border-color: rgba(59, 130, 246, 0.34);
-  box-shadow: 0 22px 38px rgba(37, 99, 235, 0.2);
+  color: var(--gold-text);
+  background: var(--create-fab-bg);
+  border-color: rgba(212, 163, 68, 0.58);
+  box-shadow: 0 22px 38px rgba(8, 29, 65, 0.34);
   transition:
     transform 0.2s ease,
     opacity 0.2s ease,
@@ -1728,7 +1876,10 @@ form {
 }
 
 .floating-create-status:hover {
-  box-shadow: 0 26px 44px rgba(37, 99, 235, 0.26);
+  color: var(--gold-text-strong);
+  background: var(--create-fab-bg-hover);
+  border-color: rgba(212, 163, 68, 0.72);
+  box-shadow: 0 26px 44px rgba(8, 29, 65, 0.42);
 }
 
 .floating-create-status.is-hidden {
@@ -1805,6 +1956,12 @@ form {
 .ad-dock span:last-child {
   color: var(--text-soft);
   white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topbar h1 .brand-title::after {
+    animation: none;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1989,15 +2146,4 @@ form {
   #fieldInfoModal .actions {
     grid-template-columns: 1fr;
   }
-}
-
-/* Demo temporal: tinte verde estilo Golf del Sur (facil de revertir) */
-.app-fixed-bg {
-  background:
-    linear-gradient(180deg, rgba(12, 41, 30, 0.62), rgba(12, 41, 30, 0.42)),
-    radial-gradient(circle at top left, rgba(34, 197, 94, 0.22), transparent 34%),
-    radial-gradient(circle at top right, rgba(22, 163, 74, 0.2), transparent 30%),
-    radial-gradient(circle at bottom center, rgba(132, 204, 22, 0.16), transparent 34%),
-    url("./assets/images/bg-3935.jpg") center top / cover no-repeat,
-    linear-gradient(180deg, #effaf3 0%, #e5f6eb 50%, #ddefe2 100%);
 }

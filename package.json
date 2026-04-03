@@ -1,0 +1,24 @@
+{
+  "name": "golf-match-app",
+  "version": "1.0.0",
+  "description": "MVP frontend de una app para organizar partidos de golf en Tenerife.",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GTD-TFS/GOLF-MATCH.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/GTD-TFS/GOLF-MATCH/issues"
+  },
+  "homepage": "https://github.com/GTD-TFS/GOLF-MATCH#readme",
+  "devDependencies": {
+    "firebase-tools": "^15.12.0"
+  }
+}

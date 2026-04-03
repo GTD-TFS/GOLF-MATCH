@@ -346,7 +346,7 @@ window.UI = {
           <p class="field-municipality">${field.zone}</p>
         </div>
         <div class="actions field-actions">
-          <button class="field-slots-btn" data-field-slots-id="${field.id}">Salidas disponibles</button>
+          <button class="field-slots-btn" data-field-slots-id="${field.id}">Salidas</button>
           <button class="field-scorecard-btn" data-field-scorecard-id="${field.id}">Scorecard</button>
         </div>
       `;

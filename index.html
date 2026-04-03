@@ -9,6 +9,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="GOLF-MATCH" />
   <title>Golf Match</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
@@ -17,7 +20,7 @@
 <body>
   <div class="app-fixed-bg" aria-hidden="true"></div>
   <header class="topbar">
-    <h1>Golf Match</h1>
+    <h1><span class="brand-title" data-title="GOLF MATCH">GOLF MATCH</span></h1>
     <nav>
       <button data-view="matches" aria-label="Partidos">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -137,7 +140,7 @@
       <h3 id="fieldInfoTitle">Campo</h3>
       <div id="fieldInfoBody"></div>
       <div class="actions">
-        <button id="openSlotsFromInfo" class="modal-btn-slots" type="button">Salidas disponibles</button>
+        <button id="openSlotsFromInfo" class="modal-btn-slots" type="button">Salidas</button>
         <button id="openScorecardFromInfo" class="modal-btn-scorecard" type="button">Scorecard</button>
       </div>
     </div>
